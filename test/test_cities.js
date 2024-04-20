@@ -1,43 +1,227 @@
 // We import Chai to use its asserting functions here.
 const { expect, assert } = require("chai");
-const { ethers, upgrades, network } = require("hardhat");
-
+require("@nomicfoundation/hardhat-ethers");
 const { time } = require("@nomicfoundation/hardhat-network-helpers")
-const { deployCities, getTypedData, getRevertReason, getCurrentBlockTime, generateMintRequest } = require("./test_helpers");
-const { lazyMintTokens } = require("../scripts/utils");
+const { deployCities, getTypedData, getRevertReason, getCurrentBlockTime, generateMintRequest } = require("./test_helpers.js")
 const metadata = require("./test_data/metadata.json");
-
+const { ethers } = require("hardhat");
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const DEFAULT_ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000'
 
 describe(" -- Testing Cities -- ", function () {
-  describe("Minting & Vault Creation", function () {
+  
+  describe("Lazy Minting", function () {
+
+    let cities
+    let INITIAL_DEFAULT_ADMIN_AND_SIGNER
+    let royaltyRecipient, primarySaleRecipient
+
+    before(async function () {
+      [INITIAL_DEFAULT_ADMIN_AND_SIGNER, NEW_SIGNER, user1, user2, royaltyRecipient, primarySaleRecipient] = await ethers.getSigners()
+    })
+
+    beforeEach(async function () {
+      cities = await deployCities(INITIAL_DEFAULT_ADMIN_AND_SIGNER, royaltyRecipient, 10_000, primarySaleRecipient)
+    })
+
+    it("should lazy mint a number of tokens", async function () {
+      const tx = await cities.lazyMint(12, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, 'buildings_tier', ethers.toUtf8Bytes("Buildings"))
+      expect(tx).to.emit(cities, 'TokensLazyMinted')
+      const metadata = await cities.uri(0)
+      //console.log(metadata)
+      expect(await cities.uri(0)).to.equal(`ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/0`)
+      expect(await cities.uri(11)).to.equal(`ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/11`)
+      await expect(cities.uri(12)).to.be.revertedWithCustomError(cities,'BatchMintInvalidTokenId')
+    })
+  })
+
+  describe("Setting Claim Conditions", function () {
 
     let cities
     let INITIAL_DEFAULT_ADMIN_AND_SIGNER, NEW_SIGNER
     let user1, user2
-    let feeRecipient, newFeeRecipient
+    let royaltyRecipient, primarySaleRecipient
 
     before(async function () {
-      [INITIAL_DEFAULT_ADMIN_AND_SIGNER, NEW_SIGNER, user1, user2, feeRecipient, newFeeRecipient] = await ethers.getSigners()
+      [INITIAL_DEFAULT_ADMIN_AND_SIGNER, NEW_SIGNER, user1, user2, royaltyRecipient, primarySaleRecipient] = await ethers.getSigners()
     })
 
     beforeEach(async function () {
-      const cities = await deployCities(admin, royaltyRecipient, royaltyBps, primarySaleRecipient)
-      const tx = lazyMintTokens(cities, metadata)
-      console.log(tx)
+      cities = await deployCities(INITIAL_DEFAULT_ADMIN_AND_SIGNER, royaltyRecipient, 10_000, primarySaleRecipient)
+      await cities.lazyMint(12, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, 'buildings_tier', ethers.toUtf8Bytes("Buildings"))
     })
 
-    /*
-      1. calls cities mintWithSignature()
-      2. checks that user received the minted tokens
-      3. checks that TokensMintedWithSignature' event was fired with correct args
-      4. checks that VaultDeployed event was fired with correct args
-    */
+    it("should set a claim condition for token 2", async function () {
+
+      /* struct ClaimCondition {
+        uint256 startTimestamp;
+        uint256 maxClaimableSupply;
+        uint256 supplyClaimed;
+        uint256 quantityLimitPerWallet;
+        bytes32 merkleRoot;
+        uint256 pricePerToken;
+        address currency;
+        string metadata;
+      } */
+
+      const publicSaleMerkel = ethers.zeroPadValue(ethers.toUtf8Bytes(''), 32)
+      const presaleStartTime = await getCurrentBlockTime()
+      const publicSaleStartTime = Math.floor(await getCurrentBlockTime() + 60 * 60 * 24 * 99)
+      const claimConditions = [
+        {
+          startTimestamp: presaleStartTime, // start the presale now
+          maxClaimableSupply: 1000, // limit how many mints for this presale
+          pricePerToken: ethers.parseUnits("0.01", 18), // presale price
+          supplyClaimed: 0, // how many have been claimed
+          quantityLimitPerWallet: 5, // limit how many can be minted per wallet
+          merkleRoot: publicSaleMerkel, // the merkle root for the presale
+          currency: ZERO_ADDRESS, // the currency for the presale,
+          metadata: ''
+        },
+        {
+          startTimestamp: publicSaleStartTime, // 24h after presale, start public sale
+          maxClaimableSupply: 9000, // limit how many mints for this presale
+          pricePerToken: ethers.parseUnits("0.08", 18), // public sale price
+          supplyClaimed: 0, // how many have been claimed
+          quantityLimitPerWallet: 10, // limit how many can be minted per wallet
+          merkleRoot: publicSaleMerkel, // the merkle root for the presale
+          currency: ZERO_ADDRESS, // the currency for the presale,
+          metadata: ''
+        }
+      ]
+      const tx1 = await cities.setClaimConditions(2, claimConditions, false)
+      const retrievedClaimCondition1 = await cities.getClaimConditionById(2, 0);
+      expect(retrievedClaimCondition1[1]).to.equal(1000)
+
+      const tx2 = await cities.setClaimConditions(2, claimConditions, false)
+      const retrievedClaimCondition2 = await cities.getClaimConditionById(2, 1);
+      expect(retrievedClaimCondition2[1]).to.equal(9000)
+    })
+
+  })
+
+  describe("Claiming", function () {
+
+    let cities
+    let INITIAL_DEFAULT_ADMIN_AND_SIGNER, NEW_SIGNER
+    let user1, user2
+    let royaltyRecipient, primarySaleRecipient
+
+    before(async function () {
+      [INITIAL_DEFAULT_ADMIN_AND_SIGNER, NEW_SIGNER, user1, user2, royaltyRecipient, primarySaleRecipient] = await ethers.getSigners()
+    })
+
+    beforeEach(async function () {
+      cities = await deployCities(INITIAL_DEFAULT_ADMIN_AND_SIGNER, royaltyRecipient, 10_000, primarySaleRecipient)
+      console.log('\tlazy minting 300 building tokens...')
+      await cities.lazyMint(300, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, 'buildings_tier', ethers.toUtf8Bytes("Buildings"))
+      console.log('\tlazy minting 60 city tokens...')
+      await cities.lazyMint(60, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, 'cities_tier', ethers.toUtf8Bytes("Cities"))
+      console.log('\tconfiguring claim conditions for building tokens...')
+
+      const merkel = ethers.zeroPadValue(ethers.toUtf8Bytes(''), 32)
+      const startTime = await getCurrentBlockTime()
+      const claimCondition = [
+        {
+          startTimestamp: startTime, // start the presale now
+          maxClaimableSupply: 5000, // limit how many mints for this presale
+          pricePerToken: ethers.parseUnits("0.01", 18), // presale price
+          supplyClaimed: 0, // how many have been claimed
+          quantityLimitPerWallet: 50, // limit how many can be minted per wallet
+          merkleRoot: merkel, // the merkle root for the presale
+          currency: ZERO_ADDRESS, // the currency for the presale,
+          metadata: ''
+        }
+      ]
+      for (let i = 0; i < 300; i++) {
+        const tx1 = await cities.setClaimConditions(i, claimCondition, false)
+      }
+      console.log('\tclaim conditions for building tokens configured')
+
+    })
+
+    it("should allow a user to claim a building", async function () {
+      console.log('TO DO:')
+    })
+
+    it("should not allow a user to claim a city", async function () {
+      console.log('TO DO:')
+    })
+
+  })
+
+  /* describe("Signature minting & burning", function () {
+
+    let cities
+    let INITIAL_DEFAULT_ADMIN_AND_SIGNER, NEW_SIGNER
+    let user1, user2
+    let royaltyRecipient, primarySaleRecipient
+
+    before(async function () {
+      [INITIAL_DEFAULT_ADMIN_AND_SIGNER, NEW_SIGNER, user1, user2, royaltyRecipient, primarySaleRecipient] = await ethers.getSigners()
+    })
+
+    beforeEach(async function () {
+      const cities = await deployCities(INITIAL_DEFAULT_ADMIN_AND_SIGNER, royaltyRecipient, 10_000, primarySaleRecipient)
+      const tx = await cities.lazyMint(12, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, 'buildings_tier', ethers.toUtf8Bytes("Buildings"))
+      expect(tx).to.emit(cities, 'TokensLazyMinted')
+      const metadata = await cities.uri(0)
+      //console.log(metadata)
+      expect(await cities.uri(0)).to.equal(`ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/0`)
+      expect(await cities.uri(11)).to.equal(`ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/11`)
+      await expect(cities.uri(12)).to.be.revertedWithCustomError(cities,'BatchMintInvalidTokenId')
+    })
+  })
+
+  describe("Transactions", function () {
+    let owner, feeRecipient
+    let cities, treasury
+
+    before(async function () {
+      [owner, feeRecipient] = await ethers.getSigners()
+    })
+
+    beforeEach(async function () {
+      const deployedContracts = await deployCities(feeRecipient.address, 'SepoliaETH', 'https://zebra.xyz/')
+      cities = deployedContracts.cities
+      treasury = deployedContracts.treasury
+    })
+
+    it("should fail when sending native tokens to the cities", async function () {
+      // Define the amount of ETH you want to send (in wei)
+      const amountToSend = ethers.parseEther("1.2345")
+
+      await expect(owner.sendTransaction({
+        to: cities,
+        value: amountToSend,
+      })).to.be.reverted
+    })
+
+    it("should fail when sending non-native tokens to the cities contract", async function () {
+      const vaultAddress = await makeVault(cities, owner, owner)
+      await expect(cities.connect(owner).safeTransferFrom(owner.address, vaultAddress, 0, 2, "0x")).to.be.reverted
+    })
+
+    it("should transfer a quantity of NTFs from one holder to another", async function () {
+      const vaultAddress = await makeVault(cities, owner, owner)
+      await cities.connect(owner).safeTransferFrom(owner.address, feeRecipient.address, 0, 2, "0x")
+      expect(await cities.balanceOf(feeRecipient.address, 0)).to.equal(2)
+    })
+
+    it("should lazy mint a number of tokens", async function () {
+      const tx = await cities.lazyMint(12, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, 'buildings_tier', ethers.toUtf8Bytes("Buildings"))
+      expect(tx).to.emit(cities, 'TokensLazyMinted')
+      const metadata = await cities.uri(0)
+      //console.log(metadata)
+      expect(await cities.uri(0)).to.equal(`ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/0`)
+      expect(await cities.uri(11)).to.equal(`ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/11`)
+      await expect(cities.uri(12)).to.be.revertedWithCustomError(cities,'BatchMintInvalidTokenId')
+    })
+
     it("should successfully mint new tokens and initalise vaults", async function () {
       const makeVaultFee = ethers.parseUnits("0.004", "ether")
-      const mr = await generateMintRequest(cities.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER, user1.address)
+      const mr = await generateMintRequest(cities.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER.address, user1.address)
       const initialBalanceUser1 = await cities.balanceOf(user1.address, 0)
 
       const tx = await cities.connect(INITIAL_DEFAULT_ADMIN_AND_SIGNER).mintWithSignature(mr.typedData.message, mr.signature, { value: makeVaultFee })
@@ -214,122 +398,6 @@ describe(" -- Testing Cities -- ", function () {
         { value: makeVaultFee })
       ).to.be.revertedWith("Minting zero tokens.")
     })
-  })
-
-  describe("Metadata", function () {
-
-    let cities, vault
-    let INITIAL_DEFAULT_ADMIN_AND_SIGNER
-    let user1, user2
-    let feeRecipient
-
-    before(async function () {
-      [INITIAL_DEFAULT_ADMIN_AND_SIGNER, user1, user2, feeRecipient] = await ethers.getSigners()
-    })
-
-    beforeEach(async function () {
-      const deployedContracts = await deploy(feeRecipient.address, 'SepoliaETH', 'https://zebra.xyz/')
-      cities = deployedContracts.cities
-      vault = await makeVault(cities, INITIAL_DEFAULT_ADMIN_AND_SIGNER, user1)
-    })
-
-    /*
-      1. Call uri() with a valid tokenId
-    */
-    it("URI should not revert when called with valid tokenId", async function () {
-      let metadata = await cities.uri(0)
-      expect(metadata).to.exist
-    })
-
-    /*
-      1. Call uri() with invalid tokenId
-    */
-    it("URI should revert when called with invalid tokenId", async function () {
-      await expect(cities.uri(1)).to.be.revertedWith("Token not found")
-    })
-
-    /*
-      1. Call uri() and verify that the percentage is 0
-      2. Move blocktime to 33 days into 99 day unlocktime, ensure percentage still == 0
-      3. send 0.2 ETH and ensure that percentage returned == 20
-      4. send 0.2 ETH and ensure that percentage equals 33 (days)
-      5. advance time another 33 days and ensure % == 40 (eth)
-      4. send 0.6 ETH and ensure that percentage returned == 66 (days)
-      5. advance time 44 days and ensure % == 100
-    */
-    it("URI should return metadata with correct percentage", async function () {
-
-      async function getPercentage() {
-        const metadata = await cities.uri(0)
-        // Decode the base64 metadata
-        //console.log(metadata)
-        const decodedMetadata = JSON.parse(atob(metadata.split(',')[1]))
-        return decodedMetadata.attributes.find(attr => attr.trait_type === "Percent Complete").value
-      }
-
-      // 1. Verify that the percentage is 0
-      expect(await getPercentage()).to.equal(0, "Initial percentage should be 0")
-
-      // 2. Move block time fwd 33 days; percent shoul still be 0 because it's the lowest progress
-      await time.increase(60 * 60 * 24 * 33) // 33 days
-      expect(await getPercentage()).to.equal(0, "Percentage should still be 0")
-
-      // 3. Send 0.2 ETH and ensure that the percentage returned is 20
-      await user1.sendTransaction({ to: vault.target, value: ethers.parseEther("0.2") })
-      expect(await getPercentage()).to.equal(20, "Percentage should be 20 after sending 0.2 ETH")
-
-      // 4. Send 0.2 ETH and ensure that the percentage returned is 33 (days is now lowest progress)
-      await user1.sendTransaction({ to: vault.target, value: ethers.parseEther("0.2") })
-      expect(await getPercentage()).to.equal(33, "Percentage should be 33 based on time to unlock")
-
-      // 5. Move block time fwd another 33 days; percent should be 40 because ETH progress is lowest
-      await time.increase(60 * 60 * 24 * 33) // 33 days
-      expect(await getPercentage()).to.equal(40, "Percentage should be 40 based on ETH balance/target")
-
-      // 6. Send 0.6 ETH and ensure that the percentage returned is 66 (days is now lowest progress)
-      await user1.sendTransaction({ to: vault.target, value: ethers.parseEther("0.6") })
-      expect(await getPercentage()).to.equal(66, "Percentage should be 66 based on time to unlock")
-
-      // 5. Move block time fwd another 44 days; percent should now be 100 because ETH and time == 100
-      await time.increase(60 * 60 * 24 * 44) // 33 days
-      expect(await getPercentage()).to.equal(100, "Percentage should be 100")
-    }) 
-  })
-
-  describe("Transactions", function () {
-    let owner, feeRecipient
-    let cities, treasury
-
-    before(async function () {
-      [owner, feeRecipient] = await ethers.getSigners()
-    })
-
-    beforeEach(async function () {
-      const deployedContracts = await deploy(feeRecipient.address, 'SepoliaETH', 'https://zebra.xyz/')
-      cities = deployedContracts.cities
-      treasury = deployedContracts.treasury
-    })
-
-    it("should fail when sending native tokens to the cities", async function () {
-      // Define the amount of ETH you want to send (in wei)
-      const amountToSend = ethers.parseEther("1.2345")
-
-      await expect(owner.sendTransaction({
-        to: cities,
-        value: amountToSend,
-      })).to.be.reverted
-    })
-
-    it("should fail when sending non-native tokens to the cities contract", async function () {
-      const vaultAddress = await makeVault(cities, owner, owner)
-      await expect(cities.connect(owner).safeTransferFrom(owner.address, vaultAddress, 0, 2, "0x")).to.be.reverted
-    })
-
-    it("should transfer a quantity of NTFs from one holder to another", async function () {
-      const vaultAddress = await makeVault(cities, owner, owner)
-      await cities.connect(owner).safeTransferFrom(owner.address, feeRecipient.address, 0, 2, "0x")
-      expect(await cities.balanceOf(feeRecipient.address, 0)).to.equal(2)
-    })
-  })
+  }) */
 
 })
