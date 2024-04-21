@@ -2,11 +2,11 @@
 const { expect, assert } = require("chai");
 require("@nomicfoundation/hardhat-ethers");
 const { time } = require("@nomicfoundation/hardhat-network-helpers")
-const { deployCities, getTypedData, getRevertReason, getCurrentBlockTime, generateMintRequest } = require("./test_helpers.js")
-const metadata = require("./test_data/metadata.json");
+const { deployCities, getMerkleProof, getRevertReason, getCurrentBlockTime, generateClaimRequest } = require("./test_helpers.js")
+const metadata = require("./test_data/metadata.json")
 const { ethers } = require("hardhat");
 
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+const ZERO_BYTES = ethers.zeroPadValue(ethers.toUtf8Bytes(''), 32)
 const DEFAULT_ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000'
 
 describe(" -- Testing Cities -- ", function () {
@@ -65,6 +65,17 @@ describe(" -- Testing Cities -- ", function () {
         string metadata;
       } */
 
+      const allowlistedAddresses = [
+        user1.address,
+        user2.address
+      ]
+
+      const encodedAddresses = new ethers.AbiCoder().encode(
+        ['address[]'],
+        [allowlistedAddresses]
+      )
+
+      const preSaleMerkel = ethers.keccak256(encodedAddresses);
       const publicSaleMerkel = ethers.zeroPadValue(ethers.toUtf8Bytes(''), 32)
       const presaleStartTime = await getCurrentBlockTime()
       const publicSaleStartTime = Math.floor(await getCurrentBlockTime() + 60 * 60 * 24 * 99)
@@ -75,8 +86,8 @@ describe(" -- Testing Cities -- ", function () {
           pricePerToken: ethers.parseUnits("0.01", 18), // presale price
           supplyClaimed: 0, // how many have been claimed
           quantityLimitPerWallet: 5, // limit how many can be minted per wallet
-          merkleRoot: publicSaleMerkel, // the merkle root for the presale
-          currency: ZERO_ADDRESS, // the currency for the presale,
+          merkleRoot: preSaleMerkel, // the merkle root for the presale
+          currency: ethers.ZeroAddress, // the currency for the presale,
           metadata: ''
         },
         {
@@ -86,7 +97,7 @@ describe(" -- Testing Cities -- ", function () {
           supplyClaimed: 0, // how many have been claimed
           quantityLimitPerWallet: 10, // limit how many can be minted per wallet
           merkleRoot: publicSaleMerkel, // the merkle root for the presale
-          currency: ZERO_ADDRESS, // the currency for the presale,
+          currency: ethers.ZeroAddress, // the currency for the presale,
           metadata: ''
         }
       ]
@@ -114,35 +125,95 @@ describe(" -- Testing Cities -- ", function () {
 
     beforeEach(async function () {
       cities = await deployCities(INITIAL_DEFAULT_ADMIN_AND_SIGNER, royaltyRecipient, 10_000, primarySaleRecipient)
-      console.log('\tlazy minting 300 building tokens...')
+      //console.log('\tlazy minting 300 building tokens...')
       await cities.lazyMint(300, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, 'buildings_tier', ethers.toUtf8Bytes("Buildings"))
-      console.log('\tlazy minting 60 city tokens...')
+      //console.log('\tlazy minting 60 city tokens...')
       await cities.lazyMint(60, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, 'cities_tier', ethers.toUtf8Bytes("Cities"))
-      console.log('\tconfiguring claim conditions for building tokens...')
+      //console.log('\tconfiguring claim conditions for building tokens...')
 
-      const merkel = ethers.zeroPadValue(ethers.toUtf8Bytes(''), 32)
       const startTime = await getCurrentBlockTime()
       const claimCondition = [
         {
           startTimestamp: startTime, // start the presale now
           maxClaimableSupply: 5000, // limit how many mints for this presale
-          pricePerToken: ethers.parseUnits("0.01", 18), // presale price
+          pricePerToken: ethers.parseUnits("0", 18), // presale price
           supplyClaimed: 0, // how many have been claimed
           quantityLimitPerWallet: 50, // limit how many can be minted per wallet
-          merkleRoot: merkel, // the merkle root for the presale
-          currency: ZERO_ADDRESS, // the currency for the presale,
+          merkleRoot: ZERO_BYTES, // the merkle root for the presale
+          currency: ethers.ZeroAddress, // the currency for the presale,
           metadata: ''
         }
       ]
       for (let i = 0; i < 300; i++) {
         const tx1 = await cities.setClaimConditions(i, claimCondition, false)
       }
-      console.log('\tclaim conditions for building tokens configured')
-
+      //console.log('\tclaim conditions for building tokens configured')
     })
 
     it("should allow a user to claim a building", async function () {
-      console.log('TO DO:')
+
+      /* function claim(
+        address _receiver,
+        uint256 _tokenId,
+        uint256 _quantity,
+        address _currency,
+        uint256 _pricePerToken,
+        AllowlistProof calldata _allowlistProof,
+        bytes memory _data */
+
+      // 1. mint 5 building tokens of same city
+      const merkleProof = getMerkleProof([], user1.address, "50", '0')
+      const tx1 = await cities.connect(user1).claim(user1.address, 0, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx2 = await cities.connect(user1).claim(user1.address, 10, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx3 = await cities.connect(user1).claim(user1.address, 100, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx4 = await cities.connect(user1).claim(user1.address, 200, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx5 = await cities.connect(user1).claim(user1.address, 299, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      expect(await cities.balanceOf(user1.address, 0)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 10)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 100)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 200)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 299)).to.equal(1)
+      
+      // 2. claim a city token via signature mint
+      /**
+        function mintWithSignature(
+          MintRequest calldata _req,
+          bytes calldata _signature
+        ) 
+     */
+
+      // check that our admin has the MINTER_ROLE
+      expect(await cities.hasRole(await cities.MINTER_ROLE(), INITIAL_DEFAULT_ADMIN_AND_SIGNER.address)).to.equal(true)
+      
+      const inTokenIds = [0, 10, 100, 200, 299]
+      const cr = await generateClaimRequest(cities.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER, user1.address, inTokenIds, 300)
+      //console.log(cr)
+
+      // check that the signature checks out by calling verify 
+      const recovered = await cities.verify(cr.typedData.message, cr.signature)
+      //console.log('\tcontract-signature-verified:', recovered)
+
+      const tx = await cities.connect(user1).claimWithSignature(cr.typedData.message, cr.signature)
+
+      // check that the token was issued to the correct address
+      expect(await cities.balanceOf(user1.address, 300)).to.equal(1)
+
+      // check that the input tokens are no longer owned by the user
+      expect(await cities.balanceOf(user1.address, 0)).to.equal(0)
+      expect(await cities.balanceOf(user1.address, 10)).to.equal(0)
+      expect(await cities.balanceOf(user1.address, 100)).to.equal(0)
+      expect(await cities.balanceOf(user1.address, 200)).to.equal(0)
+      expect(await cities.balanceOf(user1.address, 299)).to.equal(0)
+
+      // check that the tokens have been burned
+      // emit TransferSingle(operator, from, address(0), id, amount);
+      const burnEvents = await cities.queryFilter(cities.filters.TransferSingle(null, user1.address, ethers.ZeroAddress, null, null), tx.blockNumber)
+      expect(burnEvents.length).to.equal(5)
+      expect(burnEvents[0].args[3]).to.equal(0)
+      expect(burnEvents[1].args[3]).to.equal(10)
+      expect(burnEvents[2].args[3]).to.equal(100)
+      expect(burnEvents[3].args[3]).to.equal(200)
+      expect(burnEvents[4].args[3]).to.equal(299)
     })
 
     it("should not allow a user to claim a city", async function () {

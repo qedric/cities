@@ -17,7 +17,7 @@ import "@thirdweb-dev/contracts/extension/PermissionsEnumerable.sol";
 import { CurrencyTransferLib } from "@thirdweb-dev/contracts/lib/CurrencyTransferLib.sol";
 import "@thirdweb-dev/contracts/lib/Strings.sol";
 
-import "./CitiesSignatureMint.sol";
+import "./CitiesSignatureClaim.sol";
 
 /**
  *      BASE:      ERC1155Base
@@ -52,7 +52,7 @@ contract Cities is
     LazyMintWithTier,
     PermissionsEnumerable,
     Drop1155,
-    CitiesSignatureMint
+    CitiesSignatureClaim
 {
     using Strings for uint256;
 
@@ -60,10 +60,10 @@ contract Cities is
                             State variables
     //////////////////////////////////////////////////////////////*/
 
-    /// @dev Only MINTER_ROLE holders can sign off on `MintRequest`s and lazy mint tokens.
-    bytes32 private constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    /// @dev Only MINTER_ROLE holders can sign off on `ClaimRequests and lazy mint tokens.
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     /// @dev Only METADATA_ROLE holders can reveal the URI for a batch of delayed reveal NFTs, and update or freeze batch metadata.
-    bytes32 private constant METADATA_ROLE = keccak256("METADATA_ROLE");
+    bytes32 public constant METADATA_ROLE = keccak256("METADATA_ROLE");
 
     /*//////////////////////////////////////////////////////////////
                         Mappings
@@ -248,17 +248,17 @@ contract Cities is
     }
 
     /*///////////////////////////////////////////////////////////////
-                    Signature minting logic
+                    Signature claiming logic
     //////////////////////////////////////////////////////////////*/
 
     /**
-     *  @notice Mints a token and burns the provided input tokens.
-     *  @dev    Only an account holding MINTER_ROLE can sign mint requests.
+     *  @notice Claims a token and burns the provided input tokens.
+     *  @dev    Only an account holding MINTER_ROLE can sign claim requests.
      *
-     *  @param _req The payload / mint request.
-     *  @param _signature The signature produced by an account signing the mint request.
+     *  @param _req The payload / claim request.
+     *  @param _signature The signature produced by an account signing the request.
      * 
-     * struct MintRequest {
+     * struct ClaimRequest {
         address to;
         uint256[] inTokenIds;
         uint256 outTokenId;
@@ -268,12 +268,10 @@ contract Cities is
     }
      * 
      */
-    function mintWithSignature(
-        MintRequest calldata _req,
+    function claimWithSignature(
+        ClaimRequest calldata _req,
         bytes calldata _signature
     ) external payable override returns (address signer){
- 
-        uint256 tokenIdToMint;
 
         require(_req.outTokenId < nextTokenIdToMint(), "invalid id");
 
@@ -283,15 +281,13 @@ contract Cities is
             _burn(_req.to, _req.inTokenIds[i], 1);
         }
         
-        // Verify and process payload.
+        // verify and process payload.
         signer = _processRequest(_req, _signature);
  
-        address receiver = _req.to;
+        // claim output token
+        transferTokensOnClaim(_req.to, _req.outTokenId, 1);
  
-        // mint output token
-        _mint(receiver, tokenIdToMint, 1, "");
- 
-        emit TokensMintedWithSignature(signer, receiver, tokenIdToMint, _req);
+        emit TokensClaimedWithSignature(signer, _req.to, _req.outTokenId, _req);
     }
 
     /*///////////////////////////////////////////////////////////////
@@ -449,8 +445,8 @@ contract Cities is
         return msg.sender == owner();
     }
 
-    /// @dev Returns whether a given address is authorized to sign mint requests.
-    function _canSignMintRequest(address _signer) internal view virtual override returns (bool) {
+    /// @dev Returns whether a given address is authorized to sign claim requests.
+    function _canSignClaimRequest(address _signer) internal view virtual override returns (bool) {
         return hasRole(MINTER_ROLE, _signer);
     }
 }
