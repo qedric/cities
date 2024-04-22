@@ -109,7 +109,6 @@ describe(" -- Testing Cities -- ", function () {
       const retrievedClaimCondition2 = await cities.getClaimConditionById(2, 1);
       expect(retrievedClaimCondition2[1]).to.equal(9000)
     })
-
   })
 
   describe("Claiming", function () {
@@ -175,12 +174,6 @@ describe(" -- Testing Cities -- ", function () {
       expect(await cities.balanceOf(user1.address, 299)).to.equal(1)
       
       // 2. claim a city token via signature mint
-      /**
-        function mintWithSignature(
-          MintRequest calldata _req,
-          bytes calldata _signature
-        ) 
-     */
 
       // check that our admin has the MINTER_ROLE
       expect(await cities.hasRole(await cities.MINTER_ROLE(), INITIAL_DEFAULT_ADMIN_AND_SIGNER.address)).to.equal(true)
@@ -216,259 +209,101 @@ describe(" -- Testing Cities -- ", function () {
       expect(burnEvents[4].args[3]).to.equal(299)
     })
 
-    it("should not allow a user to claim a city", async function () {
-      console.log('TO DO:')
-    })
+    it("should not allow a user without the MINTER_ROLE to sign a claim request", async function () {
+      // 1. mint 5 tokens
+      const merkleProof = getMerkleProof([], user1.address, "50", '0')
+      const tx1 = await cities.connect(user1).claim(user1.address, 0, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx2 = await cities.connect(user1).claim(user1.address, 10, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx3 = await cities.connect(user1).claim(user1.address, 100, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx4 = await cities.connect(user1).claim(user1.address, 200, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx5 = await cities.connect(user1).claim(user1.address, 299, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      expect(await cities.balanceOf(user1.address, 0)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 10)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 100)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 200)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 299)).to.equal(1)
+      
+      // 2. try to claim a city token via signature mint with unapproved signer
 
-  })
+      // check that our admin doesn NOT have the MINTER_ROLE
+      expect(await cities.hasRole(await cities.MINTER_ROLE(), user2.address)).to.equal(false)
+      
+      const inTokenIds = [0, 10, 100, 200, 299]
 
-  /* describe("Signature minting & burning", function () {
+      // generate claim request with unauthorised signer
+      const cr = await generateClaimRequest(cities.target, user2, user1.address, inTokenIds, 300)
+      //console.log(cr)
 
-    let cities
-    let INITIAL_DEFAULT_ADMIN_AND_SIGNER, NEW_SIGNER
-    let user1, user2
-    let royaltyRecipient, primarySaleRecipient
+      // check that the signature fails verify 
+      const recovered = await cities.verify(cr.typedData.message, cr.signature) 
+      expect(recovered[0]).to.equal(false)
+      //console.log('\tcontract-signature-verified:', recovered)
 
-    before(async function () {
-      [INITIAL_DEFAULT_ADMIN_AND_SIGNER, NEW_SIGNER, user1, user2, royaltyRecipient, primarySaleRecipient] = await ethers.getSigners()
-    })
-
-    beforeEach(async function () {
-      const cities = await deployCities(INITIAL_DEFAULT_ADMIN_AND_SIGNER, royaltyRecipient, 10_000, primarySaleRecipient)
-      const tx = await cities.lazyMint(12, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, 'buildings_tier', ethers.toUtf8Bytes("Buildings"))
-      expect(tx).to.emit(cities, 'TokensLazyMinted')
-      const metadata = await cities.uri(0)
-      //console.log(metadata)
-      expect(await cities.uri(0)).to.equal(`ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/0`)
-      expect(await cities.uri(11)).to.equal(`ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/11`)
-      await expect(cities.uri(12)).to.be.revertedWithCustomError(cities,'BatchMintInvalidTokenId')
-    })
-  })
-
-  describe("Transactions", function () {
-    let owner, feeRecipient
-    let cities, treasury
-
-    before(async function () {
-      [owner, feeRecipient] = await ethers.getSigners()
-    })
-
-    beforeEach(async function () {
-      const deployedContracts = await deployCities(feeRecipient.address, 'SepoliaETH', 'https://zebra.xyz/')
-      cities = deployedContracts.cities
-      treasury = deployedContracts.treasury
-    })
-
-    it("should fail when sending native tokens to the cities", async function () {
-      // Define the amount of ETH you want to send (in wei)
-      const amountToSend = ethers.parseEther("1.2345")
-
-      await expect(owner.sendTransaction({
-        to: cities,
-        value: amountToSend,
-      })).to.be.reverted
-    })
-
-    it("should fail when sending non-native tokens to the cities contract", async function () {
-      const vaultAddress = await makeVault(cities, owner, owner)
-      await expect(cities.connect(owner).safeTransferFrom(owner.address, vaultAddress, 0, 2, "0x")).to.be.reverted
-    })
-
-    it("should transfer a quantity of NTFs from one holder to another", async function () {
-      const vaultAddress = await makeVault(cities, owner, owner)
-      await cities.connect(owner).safeTransferFrom(owner.address, feeRecipient.address, 0, 2, "0x")
-      expect(await cities.balanceOf(feeRecipient.address, 0)).to.equal(2)
-    })
-
-    it("should lazy mint a number of tokens", async function () {
-      const tx = await cities.lazyMint(12, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, 'buildings_tier', ethers.toUtf8Bytes("Buildings"))
-      expect(tx).to.emit(cities, 'TokensLazyMinted')
-      const metadata = await cities.uri(0)
-      //console.log(metadata)
-      expect(await cities.uri(0)).to.equal(`ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/0`)
-      expect(await cities.uri(11)).to.equal(`ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/11`)
-      await expect(cities.uri(12)).to.be.revertedWithCustomError(cities,'BatchMintInvalidTokenId')
-    })
-
-    it("should successfully mint new tokens and initalise vaults", async function () {
-      const makeVaultFee = ethers.parseUnits("0.004", "ether")
-      const mr = await generateMintRequest(cities.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER.address, user1.address)
-      const initialBalanceUser1 = await cities.balanceOf(user1.address, 0)
-
-      const tx = await cities.connect(INITIAL_DEFAULT_ADMIN_AND_SIGNER).mintWithSignature(mr.typedData.message, mr.signature, { value: makeVaultFee })
-
-      // Verify that the token was minted and assigned to the correct recipient
-      const finalBalanceUser1 = await cities.balanceOf(user1.address, 0)
-      expect(finalBalanceUser1).to.equal(initialBalanceUser1+BigInt(4))
-
-      // Verify events in the cities contract
-      const tokensMintedEvent = await cities.queryFilter('TokensMintedWithSignature', -1)
-      expect(tokensMintedEvent.length).to.equal(1)
-      expect(tokensMintedEvent[0].args.signer).to.equal(INITIAL_DEFAULT_ADMIN_AND_SIGNER.address)
-      expect(tokensMintedEvent[0].args.mintedTo).to.equal(user1.address)
-      expect(tokensMintedEvent[0].args.tokenIdMinted).to.equal(0)
-
-      const vaultDeployedEvent = await cities.queryFilter('VaultDeployed', -1)
-      expect(vaultDeployedEvent.length).to.equal(1)
-      expect(vaultDeployedEvent[0].args.msgSender).to.equal(INITIAL_DEFAULT_ADMIN_AND_SIGNER.address)
-
-      // Retrieve the vault address from the VaultDeployed event
-      const vaultAddress = vaultDeployedEvent[0].args.vault
+      await expect(cities.connect(user1).claimWithSignature(
+        cr.typedData.message, cr.signature)).to.be.revertedWith('Invalid request') 
     })
 
     it("should not allow a signature to be used before the start time", async function() {
-      // Generate a signature for the mint request
-      const timestamp = await ethers.provider.getBlockNumber().then(blockNumber =>
-      // getBlock returns a block object and it has a timestamp property.
-      ethers.provider.getBlock(blockNumber).then(block => block.timestamp))
-      const startTime = Math.floor(timestamp + 60 * 60 * 24 * 2) // + 2 days - should FAIL
-      const endTime = Math.floor(timestamp + 60 * 60 * 24 * 7) // + 7 days
-      const unlockTime = Math.floor(timestamp + 60 * 60 * 24 * 99)
-      const targetBalance = ethers.parseUnits("1", "ether").toString()
+      // 1. mint 5 building tokens of same city
+      const merkleProof = getMerkleProof([], user1.address, "50", '0')
+      const tx1 = await cities.connect(user1).claim(user1.address, 0, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx2 = await cities.connect(user1).claim(user1.address, 10, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx3 = await cities.connect(user1).claim(user1.address, 100, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx4 = await cities.connect(user1).claim(user1.address, 200, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx5 = await cities.connect(user1).claim(user1.address, 299, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      expect(await cities.balanceOf(user1.address, 0)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 10)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 100)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 200)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 299)).to.equal(1)
+      
+      // 2. claim a city token via signature mint
 
-      const typedData = await getTypedData(
-        cities.target,
-        ZERO_ADDRESS,
-        user1.address,
-        startTime,
-        endTime,
-        4,
-        unlockTime,
-        targetBalance,
-        'A test vault',
-        'invalid start time'    
-      )
+      // check that our admin has the MINTER_ROLE
+      expect(await cities.hasRole(await cities.MINTER_ROLE(), INITIAL_DEFAULT_ADMIN_AND_SIGNER.address)).to.equal(true)
+      
+      const inTokenIds = [0, 10, 100, 200, 299]
 
-      const mr = await generateMintRequest(
-        cities.target,
-        INITIAL_DEFAULT_ADMIN_AND_SIGNER,
-        user1.address,
-        typedData
-      )
+      // set a start time 12 hours from now
+      const inValidStartTime = Math.floor((await getCurrentBlockTime()) + 60 * 60 * 12)
 
-      const makeVaultFee = ethers.parseUnits("0.004", "ether")
+      const cr = await generateClaimRequest(cities.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER, user1.address, inTokenIds, 300, inValidStartTime)
+      console.log(cr)
 
-      await expect(cities.connect(INITIAL_DEFAULT_ADMIN_AND_SIGNER).mintWithSignature(
-        mr.typedData.message,
-        mr.signature,
-        { value: makeVaultFee })
-      ).to.be.revertedWith("Request expired")
+      await expect(cities.connect(user1).claimWithSignature(
+        cr.typedData.message, cr.signature)).to.be.revertedWith('Request expired') 
     })
 
     it("should not allow a signature to be used after the expiry time", async function() {
-      const timestamp = await ethers.provider.getBlockNumber().then(blockNumber =>
-      // getBlock returns a block object and it has a timestamp property.
-      ethers.provider.getBlock(blockNumber).then(block => block.timestamp))
-      const startTime = Math.floor(timestamp - 60 * 60 * 24 * 7) // a week ago
-      const endTime = Math.floor(timestamp - 60 * 60 * 24 * 3) // 3 days ago
-      const unlockTime = Math.floor(timestamp + 60 * 60 * 24 * 99)
-      const targetBalance = ethers.parseUnits("1", "ether").toString()
+      // 1. mint 5 building tokens of same city
+      const merkleProof = getMerkleProof([], user1.address, "50", '0')
+      const tx1 = await cities.connect(user1).claim(user1.address, 0, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx2 = await cities.connect(user1).claim(user1.address, 10, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx3 = await cities.connect(user1).claim(user1.address, 100, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx4 = await cities.connect(user1).claim(user1.address, 200, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      const tx5 = await cities.connect(user1).claim(user1.address, 299, 1, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      expect(await cities.balanceOf(user1.address, 0)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 10)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 100)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 200)).to.equal(1)
+      expect(await cities.balanceOf(user1.address, 299)).to.equal(1)
+      
+      // 2. claim a city token via signature mint
 
-      const typedData = await getTypedData(
-        cities.target,
-        user1.address,
-        ZERO_ADDRESS,
-        startTime,
-        endTime,
-        4,
-        unlockTime,
-        targetBalance,
-        'A test vault',
-        'invalid end time'    
-      )
+      // check that our admin has the MINTER_ROLE
+      expect(await cities.hasRole(await cities.MINTER_ROLE(), INITIAL_DEFAULT_ADMIN_AND_SIGNER.address)).to.equal(true)
+      
+      const inTokenIds = [0, 10, 100, 200, 299]
 
-      const mr = await generateMintRequest(
-        cities.target,
-        INITIAL_DEFAULT_ADMIN_AND_SIGNER,
-        user1.address,
-        typedData
-      )
+      // set an end time 12 hours before now
+      const validSartTime = Math.floor((await getCurrentBlockTime()) - 60 * 60 * 24)
+      const inValidEndTime = Math.floor((await getCurrentBlockTime()) - 60 * 60 * 12)
 
-      const makeVaultFee = ethers.parseUnits("0.004", "ether")
+      const cr = await generateClaimRequest(cities.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER, user1.address, inTokenIds, 300, validSartTime, inValidEndTime)
+      console.log(cr)
 
-      await expect(cities.connect(INITIAL_DEFAULT_ADMIN_AND_SIGNER).mintWithSignature(
-        mr.typedData.message,
-        mr.signature,
-        { value: makeVaultFee })
-      ).to.be.revertedWith("Request expired")
+      await expect(cities.connect(user1).claimWithSignature(
+        cr.typedData.message, cr.signature)).to.be.revertedWith('Request expired')
     }) 
-
-    it("should fail if a user sets unlock date in the past AND targetbalance <= 0", async function () {
-      const timestamp = await ethers.provider.getBlockNumber().then(blockNumber =>
-      // getBlock returns a block object and it has a timestamp property.
-      ethers.provider.getBlock(blockNumber).then(block => block.timestamp))
-      const startTime = Math.floor(timestamp - 60 * 60 * 24 * 7) // a week ago
-      const endTime = Math.floor(timestamp + 60 * 60 * 24 * 3) // in 3 days
-
-      const unlockTime = Math.floor(Date.now() / 1000) - 60 // 60 seconds in the past
-      const targetBalance = 0
-
-      const typedData = await getTypedData(
-        cities.target,
-        user1.address,
-        ZERO_ADDRESS,
-        startTime,
-        endTime,
-        4,
-        unlockTime,
-        targetBalance,
-        'A test vault',
-        'invalid unlock time with targetBalance zero'    
-      )
-
-      const mr = await generateMintRequest(
-        cities.target,
-        INITIAL_DEFAULT_ADMIN_AND_SIGNER,
-        user1.address,
-        typedData
-      )
-
-      const makeVaultFee = ethers.parseUnits("0.004", "ether")
-      await expect(cities.connect(INITIAL_DEFAULT_ADMIN_AND_SIGNER).mintWithSignature(
-        mr.typedData.message,
-        mr.signature,
-        { value: makeVaultFee })
-      ).to.be.revertedWith("Unlock time should be in the future, or target balance greater than 0")
-    })
-
-    it("should fail if a the quantity is <= 0", async function () {
-
-       // Generate a signature for the mint request
-      const timestamp = await ethers.provider.getBlockNumber().then(blockNumber =>
-      // getBlock returns a block object and it has a timestamp property.
-      ethers.provider.getBlock(blockNumber).then(block => block.timestamp))
-      const startTime = Math.floor(timestamp - 60 * 60 * 24 * 7) // a week ago
-      const endTime = Math.floor(timestamp + 60 * 60 * 24 * 7) // + 7 days
-      const unlockTime = Math.floor(timestamp + 60 * 60 * 24 * 99)
-      const targetBalance = ethers.parseUnits("1", "ether").toString()
-
-      const typedData = await getTypedData(
-        cities.target,
-        user1.address,
-        ZERO_ADDRESS,
-        startTime,
-        endTime,
-        0,
-        unlockTime,
-        targetBalance,
-        'A test vault',
-        'invalid start time'    
-      )
-
-      const mr = await generateMintRequest(
-        cities.target,
-        INITIAL_DEFAULT_ADMIN_AND_SIGNER,
-        user1.address,
-        typedData
-      )
-
-      const makeVaultFee = ethers.parseUnits("0.004", "ether")
-      await expect(cities.connect(INITIAL_DEFAULT_ADMIN_AND_SIGNER).mintWithSignature(
-        mr.typedData.message,
-        mr.signature,
-        { value: makeVaultFee })
-      ).to.be.revertedWith("Minting zero tokens.")
-    })
-  }) */
-
+  })
 })
