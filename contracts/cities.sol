@@ -9,9 +9,10 @@ import "@thirdweb-dev/contracts/extension/ContractMetadata.sol";
 import "@thirdweb-dev/contracts/extension/Royalty.sol";
 import "@thirdweb-dev/contracts/extension/BatchMintMetadata.sol";
 import "@thirdweb-dev/contracts/extension/PrimarySale.sol";
-import "@thirdweb-dev/contracts/extension/LazyMintWithTier.sol";
+import "@thirdweb-dev/contracts/extension/LazyMint.sol";
 import "@thirdweb-dev/contracts/extension/Drop1155.sol";
 import "@thirdweb-dev/contracts/extension/PermissionsEnumerable.sol";
+import "@thirdweb-dev/contracts/extension/Multicall.sol";
 
 import { CurrencyTransferLib } from "@thirdweb-dev/contracts/lib/CurrencyTransferLib.sol";
 import "@thirdweb-dev/contracts/lib/Strings.sol";
@@ -62,6 +63,10 @@ contract Cities is
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     /// @dev Only METADATA_ROLE holders can reveal the URI for a batch of delayed reveal NFTs, and update or freeze batch metadata.
     bytes32 public constant METADATA_ROLE = keccak256("METADATA_ROLE");
+
+    function contractType() external pure returns (bytes32) {
+        return bytes32("DropERC1155");
+    }
 
     /*//////////////////////////////////////////////////////////////
                         Mappings
@@ -210,28 +215,6 @@ contract Cities is
      */
     function uri(uint256 _tokenId) public view virtual override returns (string memory) {
         return string(abi.encodePacked(_getBaseURI(_tokenId), _tokenId.toString()));
-    }
-
-    /*///////////////////////////////////////////////////////////////
-                    Overriden lazy minting logic
-    //////////////////////////////////////////////////////////////*/
-
-    /**
-     *  @notice                  Lets an authorized address lazy mint a given amount of NFTs.
-     *
-     *  @param _amount           The number of NFTs to lazy mint.
-     *  @param _baseURIForTokens The placeholder base URI for the 'n' number of NFTs being lazy minted, where the
-     *                           metadata for each of those NFTs is `${baseURIForTokens}/${tokenId}`.
-     *  @param _data             The encrypted base URI + provenance hash for the batch of NFTs being lazy minted.
-     *  @return batchId          A unique integer identifier for the batch of NFTs lazy minted together.
-     */
-    function lazyMint(
-        uint256 _amount,
-        string calldata _baseURIForTokens,
-        string calldata _tier,
-        bytes calldata _data
-    ) public virtual override returns (uint256 batchId) {
-        return LazyMintWithTier.lazyMint(_amount, _baseURIForTokens, _tier, _data);
     }
 
     /// @notice The tokenId assigned to the next new NFT to be lazy minted.

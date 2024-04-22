@@ -26,7 +26,7 @@ describe(" -- Testing Cities -- ", function () {
     })
 
     it("should lazy mint a number of tokens", async function () {
-      const tx = await cities.lazyMint(12, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, 'buildings_tier', ethers.toUtf8Bytes("Buildings"))
+      const tx = await cities.lazyMint(12, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, ethers.toUtf8Bytes("Buildings"))
       expect(tx).to.emit(cities, 'TokensLazyMinted')
       const metadata = await cities.uri(0)
       //console.log(metadata)
@@ -49,7 +49,7 @@ describe(" -- Testing Cities -- ", function () {
 
     beforeEach(async function () {
       cities = await deployCities(INITIAL_DEFAULT_ADMIN_AND_SIGNER, royaltyRecipient, 10_000, primarySaleRecipient)
-      await cities.lazyMint(12, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, 'buildings_tier', ethers.toUtf8Bytes("Buildings"))
+      await cities.lazyMint(12, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, ethers.toUtf8Bytes("Buildings"))
     })
 
     it("should set a claim condition for token 2", async function () {
@@ -124,9 +124,9 @@ describe(" -- Testing Cities -- ", function () {
     beforeEach(async function () {
       cities = await deployCities(INITIAL_DEFAULT_ADMIN_AND_SIGNER, royaltyRecipient, 10_000, primarySaleRecipient)
       //console.log('\tlazy minting 300 building tokens...')
-      await cities.lazyMint(300, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, 'buildings_tier', ethers.toUtf8Bytes("Buildings"))
+      await cities.lazyMint(300, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, ethers.toUtf8Bytes("Buildings"))
       //console.log('\tlazy minting 60 city tokens...')
-      await cities.lazyMint(60, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, 'cities_tier', ethers.toUtf8Bytes("Cities"))
+      await cities.lazyMint(60, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, ethers.toUtf8Bytes("Cities"))
       //console.log('\tconfiguring claim conditions for building tokens...')
 
       const startTime = await getCurrentBlockTime()
