@@ -48,12 +48,22 @@ contract Cities is
     Royalty,
     BatchMintMetadata,
     PrimarySale,
-    LazyMintWithTier,
+    LazyMint,
     PermissionsEnumerable,
     Drop1155,
-    CitiesSignatureClaim
+    CitiesSignatureClaim,
+    Multicall
 {
     using Strings for uint256;
+
+    /// @dev The sender is not authorized to perform the action
+    error Unauthorized();
+
+    /// @dev not enough tokens in wallet to perform the action
+    error InsufficientBalance();
+
+    /// @dev token id provided is invalid
+    error InvalidId();
 
     /*///////////////////////////////////////////////////////////////
                             State variables
@@ -177,8 +187,9 @@ contract Cities is
      */
     function burn(address _owner, uint256 _tokenId, uint256 _amount) external virtual {
 
-        require(msg.sender == _owner || isApprovedForAll[_owner][msg.sender], "Unapproved caller");
-        require(balanceOf[_owner][_tokenId] >= _amount, "Not enough tokens owned");
+        if(msg.sender != _owner || !isApprovedForAll[_owner][msg.sender]) {
+            revert Unauthorized();
+        }
 
         _burn(_owner, _tokenId, _amount);
     }
@@ -192,11 +203,8 @@ contract Cities is
      */
     function burnBatch(address _owner, uint256[] memory _tokenIds, uint256[] memory _amounts) external virtual {
 
-        require(msg.sender == _owner || isApprovedForAll[_owner][msg.sender], "Unapproved caller");
-        require(_tokenIds.length == _amounts.length, "Length mismatch");
-
-        for (uint256 i = 0; i < _tokenIds.length; i += 1) {
-            require(balanceOf[_owner][_tokenIds[i]] >= _amounts[i], "Not enough tokens owned");
+        if(msg.sender != _owner || !isApprovedForAll[_owner][msg.sender]) {
+            revert Unauthorized();
         }
 
         _burnBatch(_owner, _tokenIds, _amounts);
@@ -277,14 +285,18 @@ contract Cities is
         bytes calldata _signature
     ) external payable override returns (address signer){
 
-        require(_req.outTokenId < nextTokenIdToMint(), "invalid id");
+        if(_req.outTokenId >= nextTokenIdToMint()) {
+            revert InvalidId();
+        }
 
         // verify and process payload.
         signer = _processRequest(_req, _signature);
 
         // check that the receiver owns all tokens in inTokenIds, then burn 'em
         for (uint256 i = 0; i < _req.inTokenIds.length; i += 1) {
-            require(balanceOf[_req.to][_req.inTokenIds[i]] > 0, "Not enough tokens owned");
+            if (balanceOf[_req.to][_req.inTokenIds[i]] == 0) {
+                revert InsufficientBalance();
+            }
             _burn(_req.to, _req.inTokenIds[i], 1);
         }
  
@@ -313,7 +325,7 @@ contract Cities is
         bytes memory
     ) internal view virtual override {
         if (_tokenId >= nextTokenIdToLazyMint) {
-            revert("Not enough minted tokens");
+            revert InvalidId();
         }
     }
 
@@ -345,7 +357,9 @@ contract Cities is
         uint256 _pricePerToken
     ) internal override {
         if (_pricePerToken == 0) {
-            require(msg.value == 0, "!V");
+            if (msg.value > 0) {
+                revert CurrencyTransferLib.CurrencyTransferLibMismatchedValue(0, msg.value);
+            }
             return;
         }
 
@@ -361,7 +375,9 @@ contract Cities is
         } else {
             validMsgValue = msg.value == 0;
         }
-        require(validMsgValue, "!V");
+        if(!validMsgValue) {
+            revert CurrencyTransferLib.CurrencyTransferLibMismatchedValue(totalPrice, msg.value);
+        }
 
         CurrencyTransferLib.transferCurrency(_currency, msg.sender, _saleRecipient, totalPrice);
     }
@@ -435,8 +451,8 @@ contract Cities is
     }
 
     /// @dev Returns whether lazy minting can be done in the given execution context.
-    function _canLazyMint() internal view override returns (bool) {
-        return hasRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    function _canLazyMint() internal view virtual override returns (bool) {
+        return hasRole(MINTER_ROLE, msg.sender);
     }
 
     /// @dev Checks whether NFTs can be revealed in the given execution context.
