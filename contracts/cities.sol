@@ -6,7 +6,6 @@ pragma solidity ^0.8.0;
 import { ERC1155 } from "@thirdweb-dev/contracts/eip/ERC1155.sol";
 
 import "@thirdweb-dev/contracts/extension/ContractMetadata.sol";
-import "@thirdweb-dev/contracts/extension/Ownable.sol";
 import "@thirdweb-dev/contracts/extension/Royalty.sol";
 import "@thirdweb-dev/contracts/extension/BatchMintMetadata.sol";
 import "@thirdweb-dev/contracts/extension/PrimarySale.sol";
@@ -45,7 +44,6 @@ import "./CitiesSignatureClaim.sol";
 contract Cities is
     ERC1155,
     ContractMetadata,
-    Ownable,
     Royalty,
     BatchMintMetadata,
     PrimarySale,
@@ -108,7 +106,6 @@ contract Cities is
         address _primarySaleRecipient
     ) ERC1155(_name, _symbol) {
         
-        _setupOwner(_defaultAdmin);
         _setupDefaultRoyaltyInfo(_royaltyRecipient, _royaltyBps);
         _setupPrimarySaleRecipient(_primarySaleRecipient);
 
@@ -412,37 +409,32 @@ contract Cities is
 
     /// @dev Checks whether primary sale recipient can be set in the given execution context.
     function _canSetPrimarySaleRecipient() internal view override returns (bool) {
-        return msg.sender == owner();
-    }
-
-    /// @dev Checks whether owner can be set in the given execution context.
-    function _canSetOwner() internal view virtual override returns (bool) {
-        return msg.sender == owner();
+        return hasRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     /// @dev Checks whether royalty info can be set in the given execution context.
     function _canSetRoyaltyInfo() internal view virtual override returns (bool) {
-        return msg.sender == owner();
+        return hasRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     /// @dev Checks whether contract metadata can be set in the given execution context.
     function _canSetContractURI() internal view override returns (bool) {
-        return msg.sender == owner();
+        return hasRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     /// @dev Checks whether platform fee info can be set in the given execution context.
     function _canSetClaimConditions() internal view override returns (bool) {
-        return msg.sender == owner();
+        return hasRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     /// @dev Returns whether lazy minting can be done in the given execution context.
     function _canLazyMint() internal view override returns (bool) {
-        return msg.sender == owner();
+        return hasRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     /// @dev Checks whether NFTs can be revealed in the given execution context.
     function _canReveal() internal view virtual returns (bool) {
-        return msg.sender == owner();
+        return hasRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     /// @dev Returns whether a given address is authorized to sign claim requests.
