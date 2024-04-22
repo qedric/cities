@@ -131,8 +131,7 @@ contract Cities is
      * @param _uri   the new base URI for the batch.
      */
     function updateBatchBaseURI(uint256 _index, string calldata _uri) external onlyRole(METADATA_ROLE) {
-        uint256 batchId = getBatchIdAtIndex(_index);
-        _setBaseURI(batchId, _uri);
+        _setBaseURI(getBatchIdAtIndex(_index), _uri);
     }
 
     /**
@@ -141,8 +140,7 @@ contract Cities is
      * @param _index Index of the desired batch in batchIds array.
      */
     function freezeBatchBaseURI(uint256 _index) external onlyRole(METADATA_ROLE) {
-        uint256 batchId = getBatchIdAtIndex(_index);
-        _freezeBaseURI(batchId);
+        _freezeBaseURI(getBatchIdAtIndex(_index));
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -173,9 +171,8 @@ contract Cities is
      *  @param _amount  The amount of the NFT to burn.
      */
     function burn(address _owner, uint256 _tokenId, uint256 _amount) external virtual {
-        address caller = msg.sender;
 
-        require(caller == _owner || isApprovedForAll[_owner][caller], "Unapproved caller");
+        require(msg.sender == _owner || isApprovedForAll[_owner][msg.sender], "Unapproved caller");
         require(balanceOf[_owner][_tokenId] >= _amount, "Not enough tokens owned");
 
         _burn(_owner, _tokenId, _amount);
@@ -189,9 +186,8 @@ contract Cities is
      *  @param _amounts  The amounts of the NFTs to burn.
      */
     function burnBatch(address _owner, uint256[] memory _tokenIds, uint256[] memory _amounts) external virtual {
-        address caller = msg.sender;
 
-        require(caller == _owner || isApprovedForAll[_owner][caller], "Unapproved caller");
+        require(msg.sender == _owner || isApprovedForAll[_owner][msg.sender], "Unapproved caller");
         require(_tokenIds.length == _amounts.length, "Length mismatch");
 
         for (uint256 i = 0; i < _tokenIds.length; i += 1) {
@@ -213,8 +209,7 @@ contract Cities is
      * @return         The metadata URI for the given NFT.
      */
     function uri(uint256 _tokenId) public view virtual override returns (string memory) {
-        string memory batchUri = _getBaseURI(_tokenId);
-        return string(abi.encodePacked(batchUri, _tokenId.toString()));
+        return string(abi.encodePacked(_getBaseURI(_tokenId), _tokenId.toString()));
     }
 
     /*///////////////////////////////////////////////////////////////
