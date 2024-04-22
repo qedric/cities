@@ -240,6 +240,35 @@ contract Cities is
     }
 
     /*///////////////////////////////////////////////////////////////
+                       claim batch logic
+    //////////////////////////////////////////////////////////////*/
+
+    /// @dev Lets an account claim a batch of tokens
+    /// @notice the _tokenIds and _quantities arrays must be the same length. tokens must have the same pricing and allowList
+    function claimBatch(
+        address _receiver,
+        uint256[] calldata _tokenIds,
+        uint256[] calldata _quantities,
+        address _currency,
+        uint256 _pricePerToken,
+        AllowlistProof calldata _allowlistProof,
+        bytes memory _data
+    ) public payable {
+        /*
+            address _receiver,
+            uint256 _tokenId,
+            uint256 _quantity,
+            address _currency,
+            uint256 _pricePerToken,
+            AllowlistProof calldata _allowlistProof,
+            bytes memory _data
+        */
+        for(uint i = 0; i < _tokenIds.length; i++){
+            claim(_receiver, _tokenIds[i], _quantities[i], _currency, _pricePerToken, _allowlistProof, _data);
+        }
+    }
+
+    /*///////////////////////////////////////////////////////////////
                     Signature claiming logic
     //////////////////////////////////////////////////////////////*/
 
@@ -267,14 +296,14 @@ contract Cities is
 
         require(_req.outTokenId < nextTokenIdToMint(), "invalid id");
 
-        // check that the receiver owns all tokens in inTokenIds, then burn 'em
-        for (uint256 i = 0; i < _req.inTokenIds.length; i += 1) {
-            require(balanceOf[_req.to][_req.inTokenIds[i]] >= 0, "Not enough tokens owned");
-            _burn(_req.to, _req.inTokenIds[i], 1);
-        }
-        
         // verify and process payload.
         signer = _processRequest(_req, _signature);
+
+        // check that the receiver owns all tokens in inTokenIds, then burn 'em
+        for (uint256 i = 0; i < _req.inTokenIds.length; i += 1) {
+            require(balanceOf[_req.to][_req.inTokenIds[i]] > 0, "Not enough tokens owned");
+            _burn(_req.to, _req.inTokenIds[i], 1);
+        }
  
         // claim output token
         transferTokensOnClaim(_req.to, _req.outTokenId, 1);
