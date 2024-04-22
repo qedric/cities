@@ -142,7 +142,7 @@ module.exports = {
     return token;
   },
 
-  generateClaimRequest: async function (contractAddress, signer, to_address, inTokenIds, outTokenId) {
+  generateClaimRequest: async function (contractAddress, signer, to_address, inTokenIds, outTokenId, startTime, endTime) {
     // Generate a signature for the claim request
 
     /* 
@@ -155,12 +155,12 @@ module.exports = {
       bytes32 uid;
     }
    */
-    const timestamp = await getCurrentBlockTime()
-    const endTime = Math.floor(timestamp + 60 * 60 * 24)
+    const validStartTime = startTime || await getCurrentBlockTime()
+    const validEndTime = endTime || Math.floor(validStartTime + 60 * 60 * 24)
     const typedData = await getTypedData(
       contractAddress,
-      timestamp,
-      endTime,
+      validStartTime,
+      validEndTime,
       to_address,
       inTokenIds,
       outTokenId 
