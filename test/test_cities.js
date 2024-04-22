@@ -101,11 +101,10 @@ describe(" -- Testing Cities -- ", function () {
           metadata: ''
         }
       ]
-      const tx1 = await cities.setClaimConditions(2, claimConditions, false)
+      const tx = await cities.setClaimConditions(2, claimConditions, false)
       const retrievedClaimCondition1 = await cities.getClaimConditionById(2, 0);
       expect(retrievedClaimCondition1[1]).to.equal(1000)
 
-      const tx2 = await cities.setClaimConditions(2, claimConditions, false)
       const retrievedClaimCondition2 = await cities.getClaimConditionById(2, 1);
       expect(retrievedClaimCondition2[1]).to.equal(9000)
     })
@@ -149,7 +148,23 @@ describe(" -- Testing Cities -- ", function () {
       //console.log('\tclaim conditions for building tokens configured')
     })
 
-    it("should allow a user to claim a building", async function () {
+    it("should allow a user to claim a batch of tokens but not more than allowed", async function() {
+      // mint 5 building tokens of same city
+      const tokenIds = [1, 11, 101, 201, 299]
+      const quantities = [10, 10, 10, 10, 10]
+      const merkleProof = getMerkleProof([], user1.address, "50", '0')
+      const tx1 = await cities.connect(user1).claimBatch(user1.address, tokenIds, quantities, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)
+      expect(await cities.balanceOf(user1.address, 1)).to.equal(10)
+      expect(await cities.balanceOf(user1.address, 11)).to.equal(10)
+      expect(await cities.balanceOf(user1.address, 101)).to.equal(10)
+      expect(await cities.balanceOf(user1.address, 201)).to.equal(10)
+      expect(await cities.balanceOf(user1.address, 299)).to.equal(10)
+
+      // now try mint over the quantityLimitPerWallet
+      await expect(cities.connect(user1).claim(user1.address, 1, 41, ethers.ZeroAddress, 0, merkleProof, ZERO_BYTES)).to.be.revertedWithCustomError(cities, 'DropClaimExceedLimit')
+    })
+
+    it("should allow a user to claim and burn tokens with signature", async function () {
 
       /* function claim(
         address _receiver,
@@ -207,7 +222,7 @@ describe(" -- Testing Cities -- ", function () {
       expect(burnEvents[2].args[3]).to.equal(100)
       expect(burnEvents[3].args[3]).to.equal(200)
       expect(burnEvents[4].args[3]).to.equal(299)
-    })
+    })    
 
     it("should not allow a user without the MINTER_ROLE to sign a claim request", async function () {
       // 1. mint 5 tokens
@@ -268,7 +283,7 @@ describe(" -- Testing Cities -- ", function () {
       const inValidStartTime = Math.floor((await getCurrentBlockTime()) + 60 * 60 * 12)
 
       const cr = await generateClaimRequest(cities.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER, user1.address, inTokenIds, 300, inValidStartTime)
-      console.log(cr)
+      //console.log(cr)
 
       await expect(cities.connect(user1).claimWithSignature(
         cr.typedData.message, cr.signature)).to.be.revertedWith('Request expired') 
@@ -300,7 +315,7 @@ describe(" -- Testing Cities -- ", function () {
       const inValidEndTime = Math.floor((await getCurrentBlockTime()) - 60 * 60 * 12)
 
       const cr = await generateClaimRequest(cities.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER, user1.address, inTokenIds, 300, validSartTime, inValidEndTime)
-      console.log(cr)
+      //console.log(cr)
 
       await expect(cities.connect(user1).claimWithSignature(
         cr.typedData.message, cr.signature)).to.be.revertedWith('Request expired')

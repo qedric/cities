@@ -30,7 +30,7 @@ const config: HardhatUserConfig = {
   gasReporter: {
     enabled: true,
     currency: 'EUR',
-    gasPrice: 0.1,
+    gasPrice: 17,
     coinmarketcap: '9ce1674f-8587-4207-877a-705d1429764b'
   }
 }
