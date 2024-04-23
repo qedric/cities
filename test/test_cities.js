@@ -1,8 +1,8 @@
 // We import Chai to use its asserting functions here.
 const { expect, assert } = require("chai");
 require("@nomicfoundation/hardhat-ethers");
-const { time } = require("@nomicfoundation/hardhat-network-helpers")
-const { deployCities, getMerkleProof, getRevertReason, getCurrentBlockTime, generateClaimRequest } = require("./test_helpers.js")
+//const { time } = require("@nomicfoundation/hardhat-network-helpers")
+const { deployCities, getMerkleProof, getCurrentBlockTime, generateClaimRequest } = require("./test_helpers.js")
 const metadata = require("./test_data/metadata.json")
 const { ethers } = require("hardhat");
 
