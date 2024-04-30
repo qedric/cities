@@ -8,7 +8,6 @@ import {
 } from "thirdweb"
 import { baseSepolia } from "thirdweb/chains"
 import dotenv from "dotenv"
-import { ethers } from "hardhat"
 import { ClaimConditionsInput } from "thirdweb/dist/types/utils/extensions/drops/types"
 import { setClaimConditions } from "thirdweb/extensions/erc1155"
 import { privateKeyToAccount } from "thirdweb/wallets"
@@ -105,4 +104,16 @@ const claimConditions:ClaimConditionsInput[] = [
     }
   ]
 
-setClaimConditionsForTokens([0n, 1n, 2n, 3n, 4n, 5n, 6n, 7n, 8n, 9n], contract, claimConditions, false)
+  // Function to generate an array of BigInts from 0n to maxN
+function generateBigIntArray(maxN:number) {
+  const result = [];
+  for (let i = 0; i <= maxN; i++) {
+    result.push(BigInt(i));
+  }
+  return result;
+}
+
+// Call the function to generate the array
+const bigIntArray = generateBigIntArray(463);
+
+setClaimConditionsForTokens(bigIntArray, contract, claimConditions, false)

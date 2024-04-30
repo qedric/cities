@@ -30,7 +30,7 @@ const nfts = async () => {
     const result = await getNFTs({
       contract,
       start: 0,
-      count: 10,
+      count: 1000,
     })
     return result;
   } catch (error) {
