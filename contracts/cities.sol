@@ -19,6 +19,30 @@ import "@thirdweb-dev/contracts/lib/Strings.sol";
 
 import "./CitiesSignatureClaim.sol";
 
+library Random {
+
+    function getRandomNumbers(uint256 min, uint256 max, uint8 count) public view returns (uint8[] memory) {
+        require(max >= min, "Invalid range");
+        require(count > 0, "Count must be greater than zero");
+
+        // Initialize the array to store random numbers
+        uint8[] memory randomNumbers = new uint8[](count);
+
+        // Calculate the seed using block timestamp and gasleft
+        uint256 seed = uint256(keccak256(abi.encodePacked(block.timestamp, gasleft())));
+
+        // Generate random numbers and fill the array
+        for (uint8 i = 0; i < count; i++) {
+            // Use modulo operation to get a random number within the range
+            randomNumbers[i] = uint8(min + (seed % (max - min + 1)));
+            // Update the seed for the next iteration
+            seed = uint256(keccak256(abi.encodePacked(seed)));
+        }
+
+        return randomNumbers;
+    }
+}
+
 /**
  *      BASE:      ERC1155Base
  *      EXTENSION: DropSinglePhase1155
@@ -65,6 +89,9 @@ contract Cities is
     /// @dev token id provided is invalid
     error InvalidId();
 
+    /// @dev The value is higher than allowed
+    error MaxExceeded();
+
     /*///////////////////////////////////////////////////////////////
                             State variables
     //////////////////////////////////////////////////////////////*/
@@ -73,6 +100,9 @@ contract Cities is
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     /// @dev Only METADATA_ROLE holders can reveal the URI for a batch of delayed reveal NFTs, and update or freeze batch metadata.
     bytes32 public constant METADATA_ROLE = keccak256("METADATA_ROLE");
+
+    /// @dev the maximum number of tokens that can be claimed in a single batch
+    uint8 public maxBatchClaimSize = 10;
 
     function contractType() external pure returns (bytes32) {
         return bytes32("DropERC1155");
@@ -158,6 +188,15 @@ contract Cities is
         _freezeBaseURI(getBatchIdAtIndex(_index));
     }
 
+    /**
+     * @notice Sets the maximum number of tokens that can be claimed in a single batch
+     *
+     * @param max the maximum number of tokens allowed to be claimed at once
+     */
+    function setMaxClaimBatchSize(uint8 max) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        maxBatchClaimSize = max;
+    }
+
     /*//////////////////////////////////////////////////////////////
                             ERC165 Logic
     //////////////////////////////////////////////////////////////*/
@@ -231,31 +270,70 @@ contract Cities is
     }
 
     /*///////////////////////////////////////////////////////////////
-                       claim batch logic
+                       claim logic
     //////////////////////////////////////////////////////////////*/
 
-    /// @dev Lets an account claim a batch of tokens
-    /// @notice the _tokenIds and _quantities arrays must be the same length. tokens must have the same pricing and allowList
-    function claimBatch(
+    /// @dev Lets an account claim tokens.
+    /// @notice admin restricted
+    function claim(
         address _receiver,
-        uint256[] calldata _tokenIds,
-        uint256[] calldata _quantities,
+        uint256 _tokenId,
+        uint256 _quantity,
+        address _currency,
+        uint256 _pricePerToken,
+        AllowlistProof calldata _allowlistProof,
+        bytes memory _data
+    ) public payable override onlyRole(DEFAULT_ADMIN_ROLE){
+        super.claim(_receiver, _tokenId, _quantity, _currency, _pricePerToken, _allowlistProof, _data);
+    }
+
+    /// @dev Lets an account claim a batch of tokens
+    /// @notice the tokens must have the same pricing and allowList
+    function claimRandomBatch(
+        uint8 _batchSize,
+        uint256 _min,
+        uint256 _max,
+        address _receiver,
         address _currency,
         uint256 _pricePerToken,
         AllowlistProof calldata _allowlistProof,
         bytes memory _data
     ) public payable {
-        /*
-            address _receiver,
-            uint256 _tokenId,
-            uint256 _quantity,
-            address _currency,
-            uint256 _pricePerToken,
-            AllowlistProof calldata _allowlistProof,
-            bytes memory _data
-        */
-        for(uint i = 0; i < _tokenIds.length; i++){
-            claim(_receiver, _tokenIds[i], _quantities[i], _currency, _pricePerToken, _allowlistProof, _data);
+
+        if (_batchSize > maxBatchClaimSize) {
+            revert MaxExceeded();
+        }
+
+        uint8[] memory tokenIds = Random.getRandomNumbers(_min, _max, _batchSize);
+
+        for(uint i = 0; i < tokenIds.length; i++){
+            _beforeClaim(tokenIds[i], _receiver, 1, _currency, _pricePerToken, _allowlistProof, _data);
+
+            uint256 activeConditionId = getActiveClaimConditionId(tokenIds[i]);
+
+            verifyClaim(
+                activeConditionId,
+                _dropMsgSender(),
+                tokenIds[i],
+                1,
+                _currency,
+                _pricePerToken,
+                _allowlistProof
+            );
+
+            // Update contract state.
+            claimCondition[tokenIds[i]].conditions[activeConditionId].supplyClaimed += 1;
+            claimCondition[tokenIds[i]].supplyClaimedByWallet[activeConditionId][_dropMsgSender()] += 1;
+
+            // If there's a price, collect price.
+            collectPriceOnClaim(tokenIds[i], address(0), 1, _currency, _pricePerToken);
+
+            // Mint the relevant NFTs to claimer.
+            transferTokensOnClaim(_receiver, tokenIds[i], 1);
+
+            emit TokensClaimed(activeConditionId, _dropMsgSender(), _receiver, tokenIds[i], 1);
+
+            _afterClaim(tokenIds[i], _receiver, 1, _currency, _pricePerToken, _allowlistProof, _data);
         }
     }
 

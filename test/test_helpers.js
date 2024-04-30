@@ -100,7 +100,9 @@ module.exports = {
       address _primarySaleRecipient
     */
 
-    const Cities = await ethers.getContractFactory("Cities")
+    const RandomLib = await hre.ethers.getContractFactory("Random")
+    const libInstance = await RandomLib.deploy()
+    const Cities = await ethers.getContractFactory("Cities", { libraries: { Random: libInstance.target }})
     const cities = await Cities.deploy(admin.address, 'Cities', 'CT', royaltyRecipient.address, royaltyBps, primarySaleRecipient.address)
     await cities.waitForDeployment()
 
