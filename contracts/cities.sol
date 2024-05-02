@@ -13,35 +13,9 @@ import "@thirdweb-dev/contracts/extension/LazyMint.sol";
 import "@thirdweb-dev/contracts/extension/Drop1155.sol";
 import "@thirdweb-dev/contracts/extension/PermissionsEnumerable.sol";
 import "@thirdweb-dev/contracts/extension/Multicall.sol";
-
-import { CurrencyTransferLib } from "@thirdweb-dev/contracts/lib/CurrencyTransferLib.sol";
 import "@thirdweb-dev/contracts/lib/Strings.sol";
-
+import { CurrencyTransferLib } from "@thirdweb-dev/contracts/lib/CurrencyTransferLib.sol";
 import "./CitiesSignatureClaim.sol";
-
-library Random {
-
-    function getRandomNumbers(uint256 min, uint256 max, uint8 count) public view returns (uint8[] memory) {
-        require(max >= min, "Invalid range");
-        require(count > 0, "Count must be greater than zero");
-
-        // Initialize the array to store random numbers
-        uint8[] memory randomNumbers = new uint8[](count);
-
-        // Calculate the seed using block timestamp and gasleft
-        uint256 seed = uint256(keccak256(abi.encodePacked(block.timestamp, gasleft())));
-
-        // Generate random numbers and fill the array
-        for (uint8 i = 0; i < count; i++) {
-            // Use modulo operation to get a random number within the range
-            randomNumbers[i] = uint8(min + (seed % (max - min + 1)));
-            // Update the seed for the next iteration
-            seed = uint256(keccak256(abi.encodePacked(seed)));
-        }
-
-        return randomNumbers;
-    }
-}
 
 /**
  *      BASE:      ERC1155Base
@@ -304,7 +278,7 @@ contract Cities is
             revert MaxExceeded();
         }
 
-        uint8[] memory tokenIds = Random.getRandomNumbers(_min, _max, _batchSize);
+        uint8[] memory tokenIds = getRandomNumbers(_min, _max, _batchSize);
 
         for(uint i = 0; i < tokenIds.length; i++){
             _beforeClaim(tokenIds[i], _receiver, 1, _currency, _pricePerToken, _allowlistProof, _data);
@@ -387,6 +361,27 @@ contract Cities is
     /*///////////////////////////////////////////////////////////////
                         Internal functions
     //////////////////////////////////////////////////////////////*/
+
+    function getRandomNumbers(uint256 min, uint256 max, uint8 count) internal view returns (uint8[] memory) {
+        require(max >= min, "Invalid range");
+        require(count > 0, "Count must be greater than zero");
+
+        // Initialize the array to store random numbers
+        uint8[] memory randomNumbers = new uint8[](count);
+
+        // Calculate the seed using block timestamp and gasleft
+        uint256 seed = uint256(keccak256(abi.encodePacked(block.timestamp, gasleft())));
+
+        // Generate random numbers and fill the array
+        for (uint8 i = 0; i < count; i++) {
+            // Use modulo operation to get a random number within the range
+            randomNumbers[i] = uint8(min + (seed % (max - min + 1)));
+            // Update the seed for the next iteration
+            seed = uint256(keccak256(abi.encodePacked(seed)));
+        }
+
+        return randomNumbers;
+    }
 
     /**
      * @dev Runs before every `claim` function call.
