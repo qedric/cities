@@ -1,0 +1,52 @@
+{
+    "description": "Moscow is the capital and largest city of Russia, known for its rich history, stunning architecture, including the iconic Red Square and St. Basil's Cathedral, and being a hub of politics and culture, with numerous museums, galleries, and theaters, as well as its unique blend of Soviet-era and modern structures.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Moscow.jpg",
+    "name": "Moscow",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "Russia"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 8
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "Evolution Tower",
+        "value": "246m"
+      },
+      {
+        "trait_type": "Cathedral of Christ the Saviour",
+        "value": "105m"
+      },
+      {
+        "trait_type": "Troitskaya Tower",
+        "value": "71m"
+      },
+      {
+        "trait_type": "Bolshoi Theatre",
+        "value": "21m"
+      },
+      {
+        "trait_type": "Mercury City Tower",
+        "value": "339m"
+      },
+      {
+        "trait_type": "Monument to the Conquerors of Space",
+        "value": "110m"
+      },
+      {
+        "trait_type": "Triumph Palace",
+        "value": "264m"
+      },
+      {
+        "trait_type": "Saint Basil's Cathedral",
+        "value": "81m"
+    }
+    ]
+  } 

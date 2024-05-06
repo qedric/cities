@@ -1,0 +1,60 @@
+{
+    "description": "Philadelphia is a city in Pennsylvania, USA, known as the 'City of Brotherly Love' and the birthplace of American democracy, with numerous historic landmarks, such as Independence Hall and the Liberty Bell, vibrant arts scene, thriving food culture, and being a hub of commerce and industry, with numerous universities and hospitals.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Philadelphia.jpg",
+    "name": "Philadelphia",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "USA"
+      },
+      {
+        "trait_type": "State",
+        "value": "Pennsylvania"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 9
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "Clothespin",
+        "value": "14m"
+      },
+      {
+        "trait_type": "Blue Cross Tower",
+        "value": "190m"
+      },
+      {
+        "trait_type": "Commerce Square",
+        "value": "172m"
+      },
+      {
+        "trait_type": "Circa Center",
+        "value": "133m"
+      },
+      {
+        "trait_type": "Philadelphia City Hall",
+        "value": "167m"
+      },
+      {
+        "trait_type": "One Liberty Place",
+        "value": "288m"
+      },
+      {
+        "trait_type": "Mellon Bank Center",
+        "value": "241m"
+      },
+      {
+        "trait_type": "Kimmel Center",
+        "value": "18m"
+      },
+      {
+        "trait_type": "Bell Atlantic",
+        "value": "225m"
+    }
+    ]
+  } 

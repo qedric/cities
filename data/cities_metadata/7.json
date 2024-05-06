@@ -1,0 +1,61 @@
+{
+  "description": "Boston is a historic city with a population of over 0.7m, known for its rich American colonial history and prestigious universities.",
+  "external_url": "https://farconic.xyz",
+  "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Boston.jpg",
+  "name": "Boston",
+  "attributes": [
+  {
+      "trait_type": "Country",
+      "value": "USA"
+    },
+   {
+      "trait_type": "State",
+      "value": "Massachusetts"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Number of Buildings",
+      "value": 9
+    },
+    {
+      "value": "City"
+    },
+    {
+      "trait_type": "John Hancock Tower",
+      "value": "250m"
+    },
+    {
+      "trait_type": "111 Huntington Avenue",
+      "value": "169m"
+    },
+    {
+      "trait_type": "100 Federal Street (First National Bank Building)",
+      "value": "180m"
+    },
+    {
+      "trait_type": "Massachusetts State House",
+      "value": "15m"
+    },
+    {
+      "trait_type": "Zakim Bridge",
+      "value": "81m"
+    },
+    {
+      "trait_type": "Federal Reserve Bank of Boston",
+      "value": "187m"
+    },
+    {
+      "trait_type": "Berkeley Building",
+      "value": "198m"
+    },
+    {
+      "trait_type": "Hood Milk Bottle",
+      "value": "12m"
+    },
+    {
+      "trait_type": "Hatch Memorial Shell",
+      "value": "12m"
+    }
+  ]
+}
+

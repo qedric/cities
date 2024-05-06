@@ -1,0 +1,60 @@
+{
+    "description": "Melbourne is a vibrant and culturally rich city in Australia, known for its diverse arts scene, beautiful gardens, and sporting culture, including the famous Melbourne Cricket Ground, as well as its reputation as a foodie destination.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Melbourne.jpg",
+    "name": "Melbourne",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "Australia"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 10
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "GPO Building",
+        "value": "85m"
+      },
+      {
+        "trait_type": "120 Collins Street",
+        "value": "265m"
+      },
+      {
+        "trait_type": "Eureka Tower",
+        "value": "297m"
+      },
+      {
+        "trait_type": "St Paul's Cathedral",
+        "value": "96m"
+      },
+      {
+        "trait_type": "Shrine of Remembrance",
+        "value": "32m"
+      },
+      {
+        "trait_type": "Flinders St Railway Station",
+        "value": "48m"
+      },
+      {
+        "trait_type": "Bourke Place",
+        "value": "255m"
+      },
+      {
+        "trait_type": "M-Tram",
+        "value": "3m"
+      },
+      {
+        "trait_type": "The Arts Centre",
+        "value": "192m"
+      },
+      {
+        "trait_type": "101 Collins Street",
+        "value": "260m"
+    }
+    ]
+  } 

@@ -70,8 +70,6 @@ const contract = getContract({
   address: <string>process.env.CONTRACT_ADDRESS
 })
 
-
-
 /* const allowlistedAddresses = [
     user1.address,
     user2.address
@@ -97,9 +95,9 @@ const claimConditions:ClaimConditionsInput[] = [
     }, */
     {
       startTime: new Date(), 
-      maxClaimableSupply: 9000n, // limit how many mints for this presale
+      maxClaimableSupply: 100n, // limit how many mints for this presale
       priceInWei: 0n, // public sale price
-      maxClaimablePerWallet: 50n, // limit how many can be minted per wallet
+      maxClaimablePerWallet: 10n, // limit how many of each token can be minted per wallet
       //merkleRoot: publicSaleMerkel, // the merkle root for the presale
     }
   ]
@@ -114,6 +112,6 @@ function generateBigIntArray(maxN:number) {
 }
 
 // Call the function to generate the array
-const bigIntArray = generateBigIntArray(463);
+const bigIntArray = generateBigIntArray(452);
 
 setClaimConditionsForTokens(bigIntArray, contract, claimConditions, false)

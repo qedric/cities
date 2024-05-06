@@ -1,0 +1,49 @@
+{
+  "description": "Brooklyn is a culturally diverse borough in New York City with a population of over 2.5 million, renowned for its artistic communities and vibrant food scene.",
+  "external_url": "https://farconic.xyz",
+  "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Brooklyn.jpg",
+  "name": "Brooklyn",
+  "attributes": [
+  {
+      "trait_type": "Country",
+      "value": "USA"
+    },
+   {
+      "trait_type": "State",
+      "value": "New York"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Number of Buildings",
+      "value": 6
+    },
+    {
+      "value": "City"
+    },
+    {
+      "trait_type": "Grand Army Plaza",
+      "value": "24m"
+    },
+    {
+      "trait_type": "Domino Sugar Factory",
+      "value": "56m"
+    },
+    {
+      "trait_type": "Wonder Wheel",
+      "value": "45m"
+    },
+    {
+      "trait_type": "Brooklyn Bridge",
+      "value": "95m"
+    },
+    {
+      "trait_type": "Williamsburgh Savings Bank Tower",
+      "value": "156m"
+    },
+    {
+      "trait_type": "Brooklyner",
+      "value": "157m"
+    }
+  ]
+}
+

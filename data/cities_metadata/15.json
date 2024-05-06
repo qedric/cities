@@ -1,0 +1,45 @@
+{
+  "description": "Dallas is a cosmopolitan city in Texas, USA, known for its towering skyscrapers, rich history, diverse culture, and being a major center for commerce, technology, and entertainment.",
+  "external_url": "https://farconic.xyz",
+  "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Dallas.jpg",
+  "name": "Dallas",
+  "attributes": [
+  {
+      "trait_type": "Country",
+      "value": "USA"
+    },
+    {
+      "trait_type": "State",
+      "value": "Texas"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Number of Buildings",
+      "value": 5
+    },
+    {
+      "value": "City"
+    },
+    {
+      "trait_type": "Hyatt Regency",
+      "value": "105m"
+    },
+    {
+      "trait_type": "Reunion Tower",
+      "value": "171m"
+    },
+    {
+      "trait_type": "Chase Tower",
+      "value": "225m"
+    },
+    {
+      "trait_type": "Margaret Hunt Hill Bridge",
+      "value": "121m"
+    },
+    {
+      "trait_type": "Fountain Place",
+      "value": "220m"
+    }
+  ]
+}
+

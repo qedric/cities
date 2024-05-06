@@ -1,0 +1,40 @@
+{
+    "description": "Rio de Janeiro is a city in Brazil, known for its stunning natural beauty, including the iconic Christ the Redeemer statue and Guanabara Bay, vibrant culture, rich history, and reputation as a hub of music, dance, and Carnival celebrations, as well as its stunning beaches, such as Copacabana and Ipanema, and bustling nightlife.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Rio.jpg",
+    "name": "Rio de Janeiro",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "Brazil"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 5
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "Santa Teresa Tram on the Carioca Aqueduct",
+        "value": "18m"
+      },
+      {
+        "trait_type": "Museum of Contemporary Art Rio",
+        "value": "16m"
+      },
+      {
+        "trait_type": "The Metropolitan Cathedral of Saint Sebastian",
+        "value": "75m"
+      },
+      {
+        "trait_type": "Headquarters of Petrobras",
+        "value": "108m"
+      },
+      {
+        "trait_type": "Christ the Redeemer",
+        "value": "40m"
+    }
+    ]
+  } 

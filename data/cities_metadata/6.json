@@ -1,0 +1,49 @@
+{
+  "description": "Berlin is a vibrant and eclectic city with a rich history and a population of over 3.7 million.",
+  "external_url": "https://farconic.xyz",
+  "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Berlin.jpg",
+  "name": "Berlin",
+  "attributes": [
+  {
+      "trait_type": "Country",
+      "value": "Germany"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Number of Buildings",
+      "value": 7
+    },
+    {
+      "value": "City"
+    },
+    {
+      "trait_type": "Berlin Cathedral",
+      "value": "115m"
+    },
+    {
+      "trait_type": "Reichstag Building",
+      "value": "75m"
+    },
+    {
+      "trait_type": "Rotes Rathaus",
+      "value": "100m"
+    },
+    {
+      "trait_type": "Fernsehturm Berlin",
+      "value": "368m"
+    },
+    {
+      "trait_type": "Funkturm Berlin",
+      "value": "150m"
+    },
+    {
+      "trait_type": "Kollhoff Tower",
+      "value": "101m"
+    },
+    {
+      "trait_type": "BahnTower",
+      "value": "94m"
+    }
+  ]
+}
+

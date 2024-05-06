@@ -1,0 +1,53 @@
+{
+  "description": "Calgary is a bustling city in Alberta, Canada known for its stunning mountain views, diverse culture, and thriving energy industry.",
+  "external_url": "https://farconic.xyz",
+  "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Calgary.jpg",
+  "name": "Calgary",
+  "attributes": [
+  {
+      "trait_type": "Country",
+      "value": "Canada"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Number of Buildings",
+      "value": 8
+    },
+    {
+      "value": "City"
+    },
+    {
+      "trait_type": "Eighth Avenue Place",
+      "value": "210m"
+    },
+    {
+      "trait_type": "Wonderland Sculpture",
+      "value": "12m"
+    },
+    {
+      "trait_type": "Suncor Energy Centre",
+      "value": "216m"
+    },
+    {
+      "trait_type": "First Canadian Centre",
+      "value": "167m"
+    },
+    {
+      "trait_type": "Baitun Nur",
+      "value": "30m"
+    },
+    {
+      "trait_type": "Calgary Tower",
+      "value": "191m"
+    },  
+    {
+      "trait_type": "The Bow",
+      "value": "237m"
+    },
+    {
+      "trait_type": "Scotiabank Saddledome",
+      "value": "27m"
+    }
+  ]
+}
+

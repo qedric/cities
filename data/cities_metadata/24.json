@@ -1,0 +1,48 @@
+{
+    "description": "Jakarta is the capital and largest city of Indonesia, known for its rich history, bustling street life, and unique blend of traditional and modern cultures, as well as its growing economic significance in Southeast Asia.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Jakarta.jpg",
+    "name": "Jakarta",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "Indonesia"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 7
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "Istiqlal Mosque",
+        "value": "97m"
+      },
+      {
+        "trait_type": "Bakrie Tower",
+        "value": "214m"
+      },
+      {
+        "trait_type": "Cemindo Tower",
+        "value": "289m"
+      },
+      {
+        "trait_type": "National Monument",
+        "value": "132m"
+      },
+      {
+        "trait_type": "Sinarmas MSIG Tower",
+        "value": "245m"
+      },
+      {
+        "trait_type": "Jakarta Cathedral",
+        "value": "60m"
+      },
+      {
+        "trait_type": "Wisma 46",
+        "value": "262m"
+    }
+    ]
+  } 

@@ -1,0 +1,48 @@
+{
+    "description": "Minneapolis is a city in Minnesota, USA, known for its natural beauty, including the chain of lakes and parks, thriving arts and music scenes, as well as its contributions to industry, including being a major hub of the milling industry, and its numerous cultural attractions, such as the Walker Art Center and the Mill City Museum.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Minneapolis.jpg",
+    "name": "Minneapolis",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "USA"
+      },
+      {
+        "trait_type": "State",
+        "value": "Minnesota"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 6
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "Wells Fargo Center",
+        "value": "236m"
+      },
+      {
+        "trait_type": "Rand Tower",
+        "value": "95m"
+      },
+      {
+        "trait_type": "Capella Tower",
+        "value": "237m"
+      },
+      {
+        "trait_type": "Campbell Mithun Tower",
+        "value": "177m"
+      },
+      {
+        "trait_type": "Hennepin Avenue Bridge",
+        "value": "43m"
+      },
+      {
+        "trait_type": "Foshay Tower",
+        "value": "136m"
+    }
+    ]
+  } 

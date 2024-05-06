@@ -1,0 +1,44 @@
+{
+    "description": " Seoul is a dynamic, high-tech city that combines traditional Korean culture with cutting-edge innovation, attracting tourists with its rich history, modern architecture, and vibrant food and entertainment scenes.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Seoul.jpg",
+    "name": "Seoul",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "South Korea"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 6
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "63 Building",
+        "value": "274m"
+      },
+      {
+        "trait_type": "Boutique Monaco",
+        "value": "100m"
+      },
+      {
+        "trait_type": "N Seoul Tower",
+        "value": "237m"
+      },
+      {
+        "trait_type": "GT Tower",
+        "value": "130m"
+      },
+      {
+        "trait_type": "World Trade Center Seoul",
+        "value": "228m"
+      },
+      {
+        "trait_type": "Seoul Central Post Office Building",
+        "value": "79m"
+    }
+    ]
+  } 

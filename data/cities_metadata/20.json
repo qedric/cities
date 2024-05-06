@@ -1,0 +1,56 @@
+{
+    "description": "Frankfurt is a major financial and cultural center in Germany, known for its towering skyscrapers, rich history, thriving arts scene, and being a hub for commerce, with a bustling airport and the European Central Bank headquartered in the city.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Frankfurt.jpg",
+    "name": "Frankfurt",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "Germany"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 9
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "Commerzbank Tower",
+        "value": "300m"
+      },
+      {
+        "trait_type": "Trianon",
+        "value": "186m"
+      },
+      {
+        "trait_type": "Westendstrasse 1",
+        "value": "208m"
+      },
+      {
+        "trait_type": "Hammering Man Sculpture",
+        "value": "21m"
+      },
+      {
+        "trait_type": "MesseTurm",
+        "value": "256m"
+      },
+      {
+        "trait_type": "Messe Torhaus",
+        "value": "117m"
+      },
+      {
+        "trait_type": "Main Tower",
+        "value": "240m"
+      },
+      {
+        "trait_type": "Alte Oper",
+        "value": "34m"
+      },
+      {
+        "trait_type": "Westhafen Tower",
+        "value": "110m"
+    }
+    ]
+  } 

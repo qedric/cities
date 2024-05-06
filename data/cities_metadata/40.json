@@ -1,0 +1,48 @@
+{
+    "description": "Nashville is a city in Tennessee, USA, known for its rich musical heritage, including being a hub of country music and a birthplace of numerous other genres, stunning architecture, such as the Ryman Auditorium, and being a center of commerce, tourism, and culture, with numerous museums, galleries, and theaters.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Nashville.jpg",
+    "name": "Nashville",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "USA"
+      },
+      {
+        "trait_type": "State",
+        "value": "Tennessee"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 6
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "William R. Snodgrass Tennessee Tower",
+        "value": "137m"
+      },
+      {
+        "trait_type": "The Pinnacle at Symphony Place",
+        "value": "127m"
+      },
+      {
+        "trait_type": "AT&T Buildinge",
+        "value": "188m"
+      },
+      {
+        "trait_type": "Fifth Third Center",
+        "value": "150m"
+      },
+      {
+        "trait_type": "Tennessee State Capitol",
+        "value": "60m"
+      },
+      {
+        "trait_type": "One Nashville Place",
+        "value": "109m"
+    }
+    ]
+  } 

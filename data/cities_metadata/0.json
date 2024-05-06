@@ -1,0 +1,53 @@
+{
+  "description": "Amsterdam is a charming city with a population of over 880,000, known for its picturesque canals, vibrant arts and cultural scene, and historical heritage.",
+  "external_url": "https://farconic.xyz",
+  "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Amsterdam.jpg",
+  "name": "Amsterdam",
+  "attributes": [
+  {
+      "trait_type": "Country",
+      "value": "Netherlands"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Number of Buildings",
+      "value": 8
+    },
+    {
+      "value": "City"
+    },
+    {
+      "trait_type": "Royal Palace Amsterdam",
+      "value": "52m"
+    },
+    {
+      "trait_type": "Eye Film Museum",
+      "value": "23m"
+    },
+    {
+      "trait_type": "Beurs van Berlage",
+      "value": "39m"
+    },
+    {
+      "trait_type": "Rembrandt Tower",
+      "value": "150m"
+    },
+    {
+      "trait_type": "Stedelijk Museum",
+      "value": "20m"
+    },
+    {
+      "trait_type": "A'DAM Tower",
+      "value": "100m"
+    },
+    {
+      "trait_type": "Rijksmuseum",
+      "value": "36m"
+    },
+    {
+      "trait_type": "De Gooyer Windmill",
+      "value": "27m"
+    }
+  ]
+}
+

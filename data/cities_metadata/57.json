@@ -1,0 +1,52 @@
+{
+    "description": "Tokyo is a futuristic metropolis in Japan, known for its cutting-edge technology, vibrant street fashion, and rich cultural heritage.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Tokyo.jpg",
+    "name": "Tokyo",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "Japan"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 8
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "NTT DoCoMo Yoyogi",
+        "value": "272m"
+      },
+      {
+        "trait_type": "Tokyo Metropolitan Government",
+        "value": "243m"
+      },
+      {
+        "trait_type": "Sompo Japan",
+        "value": "193m"
+      },
+      {
+        "trait_type": "Tokyo Tower",
+        "value": "333m"
+      },
+      {
+        "trait_type": "Senso-ji Hozomon (Gate)",
+        "value": "12m"
+      },
+      {
+        "trait_type": "Dentsu",
+        "value": "210m"
+      },
+      {
+        "trait_type": "Mode Gakuen Cocoon Tower",
+        "value": "204m"
+      },
+      {
+        "trait_type": "Meiji Jingu (Meiji Shrine) Torii (Gate)",
+        "value": "12m"
+    }
+    ]
+  } 

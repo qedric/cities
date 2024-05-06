@@ -1,0 +1,65 @@
+{
+  "description": "Chicago is a dynamic city in Illinois, USA, renowned for its rich history, iconic architecture, vibrant arts and culture scene, diverse food options, and lakefront location.",
+  "external_url": "https://farconic.xyz",
+  "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Chicago.jpg",
+  "name": "Chicago",
+  "attributes": [
+  {
+      "trait_type": "Country",
+      "value": "USA"
+    },
+    {
+      "trait_type": "State",
+      "value": "Illinois"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Number of Buildings",
+      "value": 10
+    },
+    {
+      "value": "City"
+    },
+    {
+      "trait_type": "Crain Communications Building",
+      "value": "177m"
+    },
+    {
+      "trait_type": "Cloud Gate",
+      "value": "10m"
+    },
+    {
+      "trait_type": "Buckingham Fountain",
+      "value": "46m"
+    },
+    {
+      "trait_type": "Park Tower",
+      "value": "251m"
+    },
+    {
+      "trait_type": "Trump Tower",
+      "value": "364m"
+    },
+    {
+      "trait_type": "Hyatt Center",
+      "value": "207m"
+    },
+    {
+      "trait_type": "Ferris Wheel",
+      "value": "50m"
+    },
+    {
+      "trait_type": "Harbor Light House",
+      "value": "25m"
+    },
+    {
+      "trait_type": "John Hancock Center",
+      "value": "344m"
+    },
+    {
+      "trait_type": "Water Tower",
+      "value": "47m"
+    }
+    ]
+}
+

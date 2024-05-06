@@ -1,0 +1,44 @@
+{
+    "description": " Washington D.C. is the capital city of the United States, known for its iconic landmarks, historic monuments, and world-class museums.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/WashingtonDC.jpg",
+    "name": "Washington D.C.",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "USA"
+      },
+      {
+        "trait_type": "State",
+        "value": "District of Columbia"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 5
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "Supreme Court Building",
+        "value": "33m"
+      },
+      {
+        "trait_type": "US Capitol Building",
+        "value": "88m"
+      },
+      {
+        "trait_type": "Washington Monument",
+        "value": "169m"
+      },
+      {
+        "trait_type": "White House",
+        "value": "27m"
+      },
+      {
+        "trait_type": "Jefferson Memorial",
+        "value": "39m"
+    }
+    ]
+  } 

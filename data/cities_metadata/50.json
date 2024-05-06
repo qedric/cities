@@ -1,0 +1,56 @@
+{
+    "description": "Seattle is a bustling Pacific Northwest city known for its thriving tech industry, cultural attractions, and natural beauty, including the iconic Space Needle and nearby mountains.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Seattle.jpg",
+    "name": "Seattle",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "USA"
+      },
+      {
+        "trait_type": "State",
+        "value": "Washington"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 8
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "Seattle Central Library",
+        "value": "60m"
+      },
+      {
+        "trait_type": "Seattle Municipal Tower",
+        "value": "220m"
+      },
+      {
+        "trait_type": "Two Union Square",
+        "value": "243m"
+      },
+      {
+        "trait_type": "Space Needle",
+        "value": "184m"
+      },
+      {
+        "trait_type": "Columbia Center",
+        "value": "295m"
+      },
+      {
+        "trait_type": "Smith Tower",
+        "value": "148m"
+      },
+      {
+        "trait_type": "Rainier Tower",
+        "value": "157m"
+      },
+      {
+        "trait_type": "Fourth and Blanchard Building",
+        "value": "105m"
+    }
+    ]
+  } 

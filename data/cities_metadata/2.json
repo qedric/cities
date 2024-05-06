@@ -1,0 +1,56 @@
+{
+  "description": "Auckland is a large metropolitan city in the North Island of New Zealand with a population of over 1.6 million.",
+  "external_url": "https://farconic.xyz",
+  "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Auckland.jpg",
+  "name": "Auckland",
+  "attributes": [
+   {
+      "trait_type": "Country",
+      "value": "New Zealand"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Number of Buildings",
+      "value": 9
+    },
+    {
+      "value": "City"
+    },
+    {
+      "trait_type": "Auckland Ferry Terminal",
+      "value": "46m"
+    },
+    {
+      "trait_type": "One Tree Hill Obelisk",
+      "value": "30m"
+    },
+    {
+      "trait_type": "Auckland Harbour Bridge",
+      "value": "74m"
+    },
+    {
+      "trait_type": "Lumley Centre",
+      "value": "125m"
+    },
+    {
+      "trait_type": "Sky Tower",
+      "value": "328m"
+    },
+    {
+      "trait_type": "Vero Centre",
+      "value": "170m"
+    },
+    {
+      "trait_type": "Auckland Civic Theatre",
+      "value": "71m"
+    },
+    {
+      "trait_type": "Metropolis",
+      "value": "155m"
+    },
+    {
+      "trait_type": "University of Auckland Clocktower",
+      "value": "53m"
+    }
+  ]
+}

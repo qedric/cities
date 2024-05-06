@@ -1,0 +1,40 @@
+{
+    "description": "Vancouver is a beautiful coastal city in Canada, known for its stunning natural scenery, cultural diversity, and thriving arts and culinary scenes.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Vancouver.jpg",
+    "name": "Vancouver",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "Canada"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 5
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "The Sails of Canada Place",
+        "value": "27m"
+      },
+      {
+        "trait_type": "Fairmont Hotel",
+        "value": "112m"
+      },
+      {
+        "trait_type": "Science World",
+        "value": "28m"
+      },
+      {
+        "trait_type": "Empire Landmark Hotel",
+        "value": "121m"
+      },
+      {
+        "trait_type": "Harbour Centre",
+        "value": "171m"
+    }
+    ]
+  } 

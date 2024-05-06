@@ -1,0 +1,60 @@
+{
+    "description": "Singapore is a small island city-state known for its cleanliness, efficiency, and multiculturalism.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Singapore.jpg",
+    "name": "Singapore",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "Singapore"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 10
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "Esplanade",
+        "value": "12m"
+      },
+      {
+        "trait_type": "Sentosa Merlion",
+        "value": "37m"
+      },
+      {
+        "trait_type": "The Sail @ Marina Bay",
+        "value": "245m"
+      },
+      {
+        "trait_type": "Reflections at Keppel Bay",
+        "value": "160m"
+      },
+      {
+        "trait_type": "Marina Bay Sands",
+        "value": "200m"
+      },
+      {
+        "trait_type": "Singapore Flyer",
+        "value": "165m"
+      },
+      {
+        "trait_type": "Capital Tower",
+        "value": "254m"
+      },
+      {
+        "trait_type": "ArtScience Museum",
+        "value": "62m"
+      },
+      {
+        "trait_type": "Republic Plaza",
+        "value": "280m"
+      },
+      {
+        "trait_type": "One Raffles Place",
+        "value": "281m"
+    }
+    ]
+  } 

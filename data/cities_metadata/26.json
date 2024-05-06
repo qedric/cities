@@ -1,0 +1,44 @@
+{
+    "description": "Liverpool is a city in England, known for its rich cultural heritage, including being the birthplace of The Beatles and a hub of the maritime trade, as well as its contributions to the arts, including the renowned Liverpool Philharmonic Orchestra and numerous museums and galleries.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Liverpool.jpg",
+    "name": "Liverpool",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "England"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 6
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "Royal Liver Building",
+        "value": "101m"
+      },
+      {
+        "trait_type": "Metropolitan Cathedral of Liverpool",
+        "value": "85m"
+      },
+      {
+        "trait_type": "Liverpool Cathedral",
+        "value": "101m"
+      },
+      {
+        "trait_type": "St. John's Beacon",
+        "value": "138m"
+      },
+      {
+        "trait_type": "Port of Liverpool Building",
+        "value": "67m"
+      },
+      {
+        "trait_type": "West Tower",
+        "value": "140m"
+    }
+    ]
+  } 

@@ -1,0 +1,52 @@
+{
+    "description": "Miami is a coastal city in Florida, USA, known for its diverse cultures, beautiful beaches, and vibrant nightlife, as well as its thriving arts and entertainment scene, including the famous Art Deco Historic District and the Perez Art Museum Miami.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Miami.jpg",
+    "name": "Miami",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "USA"
+      },
+      {
+        "trait_type": "State",
+        "value": "Florida"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 7
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "Miami Tower",
+        "value": "190m"
+      },
+      {
+        "trait_type": "American Airlines Arena",
+        "value": "46m"
+      },
+      {
+        "trait_type": "Southeast Financial Center",
+        "value": "223m"
+      },
+      {
+        "trait_type": "Planetarium at Miami Science Museum",
+        "value": "7m"
+      },
+      {
+        "trait_type": "50 Biscayne",
+        "value": "169m"
+      },
+      {
+        "trait_type": "Marinablue",
+        "value": "187m"
+      },
+      {
+        "trait_type": "Freedom Tower",
+        "value": "78m"
+    }
+    ]
+  } 

@@ -1,0 +1,56 @@
+{
+    "description": "Portland is a city in Oregon, USA, known for its progressive culture, vibrant arts scene, thriving food culture, including being a hub of farm-to-table cuisine, and stunning natural beauty, including numerous parks and forests, as well as its reputation for being a hub of sustainability and innovation, with numerous tech companies and alternative transportation options.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Portland.jpg",
+    "name": "Portland",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "USA"
+      },
+      {
+        "trait_type": "State",
+        "value": "Oregon"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 8
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "Union Station",
+        "value": "46m"
+      },
+      {
+        "trait_type": "1000 Broadway",
+        "value": "88m"
+      },
+      {
+        "trait_type": "Portland Building",
+        "value": "70m"
+      },
+      {
+        "trait_type": "St. Johns Bridge",
+        "value": "122m"
+      },
+      {
+        "trait_type": "Fremont Bridge",
+        "value": "116m"
+      },
+      {
+        "trait_type": "Portland Observatory",
+        "value": "26m"
+      },
+      {
+        "trait_type": "U.S. Bancorp Tower",
+        "value": "163m"
+      },
+      {
+        "trait_type": "KOIN Center",
+        "value": "159m"
+    }
+    ]
+  } 

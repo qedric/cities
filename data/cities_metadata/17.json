@@ -1,0 +1,61 @@
+{
+  "description": "Detroit is a city in Michigan, USA, with a rich industrial history, including being the birthplace of the American automobile industry, and a thriving arts and culture scene, including renowned museums and music venues, as well as a resilient spirit embodied in its comeback from economic challenges.",
+  "external_url": "https://farconic.xyz",
+  "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Detroit.jpg",
+  "name": "Detroit",
+  "attributes": [
+  {
+      "trait_type": "Country",
+      "value": "USA"
+    },
+    {
+      "trait_type": "State",
+      "value": "Michigan"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Number of Buildings",
+      "value": 9
+    },
+    {
+      "value": "City"
+    },
+    {
+      "trait_type": "Horace E. Dodge and Son Memorial Fountain",
+      "value": "9m"
+    },
+    {
+      "trait_type": "Transcending",
+      "value": "19m"
+    },
+    {
+      "trait_type": "Penobscot Building",
+      "value": "159m"
+    },
+    {
+      "trait_type": "One Detroit Center",
+      "value": "176m"
+    },
+    {
+      "trait_type": "One Woodward Avenue",
+      "value": "131m"
+    },
+    {
+      "trait_type": "Michigan Central Station",
+      "value": "70m"
+    },  
+    {
+      "trait_type": "Detroit Marriott at the Renaissance Center",
+      "value": "222m"
+    },  
+    {
+      "trait_type": "David Stott Building",
+      "value": "133m"
+    },
+    {
+      "trait_type": "Fisher Building",
+      "value": "148m"
+    }
+  ]
+}
+

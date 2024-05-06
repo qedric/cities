@@ -1,0 +1,44 @@
+{
+  "description": "Barcelona is a Mediterranean city rich in history and cultural heritage, with a population of over 1.6 million.",
+  "external_url": "https://farconic.xyz",
+  "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Barcelona.jpg",
+  "name": "Barcelona",
+  "attributes": [
+  {
+      "trait_type": "Country",
+      "value": "Spain"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Number of Buildings",
+      "value": 6
+    },
+    {
+      "value": "City"
+    },
+    {
+      "trait_type": "Magic Fountain of Montjuïc",
+      "value": "54m"
+    },
+    {
+      "trait_type": "W Barcelona (Hotel Vela)",
+      "value": "99m"
+    },
+    {
+      "trait_type": "Torre de Telecomunicaciones de Montjuïc",
+      "value": "136m"
+    },
+    {
+      "trait_type": "Columbus Monument",
+      "value": "60m"
+    },
+    {
+      "trait_type": "Torre Agbar",
+      "value": "144m"
+    },
+    {
+      "trait_type": "Arc de Triomf",
+      "value": "37m"
+    }
+  ]
+}

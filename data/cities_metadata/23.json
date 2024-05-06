@@ -1,0 +1,48 @@
+{
+    "description": "Istanbul is a historic and culturally rich city, straddling Europe and Asia, known for its stunning architecture, including the Hagia Sophia and the Blue Mosque, vibrant food scene, and rich history, dating back to the Roman Empire.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Istanbul.jpg",
+    "name": "Istanbul",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "Turkey"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 7
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "Istanbul Sapphire",
+        "value": "261m"
+      },
+      {
+        "trait_type": "Hagia Sophia",
+        "value": "55m"
+      },
+      {
+        "trait_type": "Isbank Tower",
+        "value": "181m"
+      },
+      {
+        "trait_type": "Sultan Ahmed Mosque",
+        "value": "64m"
+      },
+      {
+        "trait_type": "Sisli Plaza",
+        "value": "170m"
+      },
+      {
+        "trait_type": "Maiden's Tower",
+        "value": "23m"
+      },
+      {
+        "trait_type": "Galata Tower",
+        "value": "63m"      
+    }
+    ]
+  } 

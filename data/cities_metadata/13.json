@@ -1,0 +1,58 @@
+{
+  "description": "Cincinnati is a historic city in Ohio, USA, known for its scenic riverfront, thriving cultural institutions, and diverse food scene, as well as its contributions to American history, including the Underground Railroad and baseball's first professional team.",
+  "external_url": "https://farconic.xyz",
+  "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Cincinnati.jpg",
+  "name": "Cincinnati",
+  "attributes": [
+  {
+      "trait_type": "Country",
+      "value": "USA"
+    },
+    {
+      "trait_type": "State",
+      "value": "Ohio"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Number of Buildings",
+      "value": 8
+    },
+    {
+      "value": "City"
+    },
+    {
+      "trait_type": "Cincinnati Museum Center at Union Terminal",
+      "value": "48m"
+    },
+    {
+      "trait_type": "Cincinnati Music Hall",
+      "value": "24m"
+    },
+    {
+      "trait_type": "Daniel Carter Beard Bridge",
+      "value": "70m"
+    },
+    {
+      "trait_type": "John A. Roebling Suspension Bridge",
+      "value": "70m"
+    },
+    {
+      "trait_type": "Scripps Center",
+      "value": "143m"
+    },
+    {
+      "trait_type": "Great American Tower at Queen City Square",
+      "value": "203m"
+    },
+    {
+      "trait_type": "Carew Tower",
+      "value": "175m"
+    },
+    {
+      "trait_type": "PNC Tower",
+      "value": "151m"
+   
+   }
+  ]
+}
+

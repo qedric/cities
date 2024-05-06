@@ -1,0 +1,56 @@
+{
+    "description": "San Francisco is a city in California, USA, known for its iconic landmarks, such as the Golden Gate Bridge and Alcatraz Island, thriving tech industry, diverse and inclusive culture, rich history, and reputation as a hub of innovation, with numerous tech companies and startups, as well as its reputation for being a leader in sustainability and environmentalism, with numerous green initiatives and alternative transportation options.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/SanFrancisco.jpg",
+    "name": "San Francisco",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "USA"
+      },
+      {
+        "trait_type": "State",
+        "value": "California"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 8
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "Cable Car",
+        "value": "3m"
+      },
+      {
+        "trait_type": "City Hall",
+        "value": "94m"
+      },
+      {
+        "trait_type": "Russ Building",
+        "value": "132m"
+      },
+      {
+        "trait_type": "Ferry Building",
+        "value": "75m"
+      },
+      {
+        "trait_type": "Golden Gate Bridge",
+        "value": "227m"
+      },
+      {
+        "trait_type": "Coit Tower",
+        "value": "64m"
+      },
+      {
+        "trait_type": "Palace of Fine Arts",
+        "value": "49m"
+      },
+      {
+        "trait_type": "Transamerica Pyramid",
+        "value": "325m"
+    }
+    ]
+  } 

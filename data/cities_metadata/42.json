@@ -1,0 +1,52 @@
+{
+    "description": "Paris is the capital of France, known as the 'City of Light,' and a hub of culture, art, fashion, and history, with numerous iconic landmarks, such as the Eiffel Tower, the Louvre Museum, and Notre-Dame Cathedral, as well as its stunning architecture, rich history, and reputation as one of the most romantic cities in the world.",
+    "external_url": "https://farconic.xyz",
+    "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Paris.jpg",
+    "name": "Paris",
+    "attributes": [
+    {
+        "trait_type": "Country",
+        "value": "France"
+      },
+      {
+        "display_type": "number",
+        "trait_type": "Number of Buildings",
+        "value": 8
+      },
+      {
+        "value": "City"
+      },
+      {
+        "trait_type": "Louvre Pyramid",
+        "value": "21m"
+      },
+      {
+        "trait_type": "Tour Montparnasse",
+        "value": "209m"
+      },
+      {
+        "trait_type": "Arc de Triomphe",
+        "value": "50m"
+      },
+      {
+        "trait_type": "Grande Arche",
+        "value": "110m"
+      },
+      {
+        "trait_type": "Eiffel Tower",
+        "value": "300"
+      },
+      {
+        "trait_type": "July Column",
+        "value": "47m"
+      },
+      {
+        "trait_type": "Notre Dame de Paris",
+        "value": "96m"
+      },
+      {
+        "trait_type": "Basilica of the Sacré Cœur",
+        "value": "83m"
+    }
+    ]
+  } 
