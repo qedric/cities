@@ -89,7 +89,7 @@ const getTypedData = async function (
 
 module.exports = {
 
-  deployCities: async (admin, royaltyRecipient, royaltyBps, primarySaleRecipient) => {
+  deployContract: async (admin, royaltyRecipient, royaltyBps, primarySaleRecipient) => {
 
     /* 
       address _defaultAdmin,
@@ -99,14 +99,14 @@ module.exports = {
       uint128 _royaltyBps,
       address _primarySaleRecipient
     */
-    const Cities = await ethers.getContractFactory("Cities")
-    const cities = await Cities.deploy(admin.address, 'Cities', 'CT', royaltyRecipient.address, royaltyBps, primarySaleRecipient.address)
-    await cities.waitForDeployment()
+    const Contract = await ethers.getContractFactory("Farconic")
+    const contract = await Contract.deploy(admin.address, 'Farconic', 'CITIES', royaltyRecipient.address, royaltyBps, primarySaleRecipient.address)
+    await contract.waitForDeployment()
 
   /*  console.log('factory address:', factory.target)
     console.log('vault address:', vaultImplementation.target)*/
 
-    return cities
+    return contract
   },
 
   getMerkleProof: (allowlistedAddresses, addressToProve, limitPerWallet, price) => {
