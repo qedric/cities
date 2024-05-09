@@ -4,22 +4,20 @@ pragma solidity ^0.8.0;
 /// @author thirdweb, modified by Q - https://warpcast.com/berlin
 
 import { ERC1155 } from "@thirdweb-dev/contracts/eip/ERC1155.sol";
-
 import "@thirdweb-dev/contracts/extension/ContractMetadata.sol";
 import "@thirdweb-dev/contracts/extension/Royalty.sol";
 import "@thirdweb-dev/contracts/extension/BatchMintMetadata.sol";
 import "@thirdweb-dev/contracts/extension/PrimarySale.sol";
 import "@thirdweb-dev/contracts/extension/LazyMint.sol";
-import "@thirdweb-dev/contracts/extension/Drop1155.sol";
 import "@thirdweb-dev/contracts/extension/PermissionsEnumerable.sol";
 import "@thirdweb-dev/contracts/extension/Multicall.sol";
 import "@thirdweb-dev/contracts/lib/Strings.sol";
 import { CurrencyTransferLib } from "@thirdweb-dev/contracts/lib/CurrencyTransferLib.sol";
 import "./CitiesSignatureClaim.sol";
+import "./AllowList.sol";
 
 /**
  *      BASE:      ERC1155Base
- *      EXTENSION: DropSinglePhase1155
  *
  *  The `ERC1155Base` smart contract implements the ERC1155 NFT standard.
  *  It includes the following additions to standard ERC1155 logic:
@@ -34,21 +32,18 @@ import "./CitiesSignatureClaim.sol";
  *
  *      - EIP 2981 compliance for royalty support on NFT marketplaces.
  *
- *  The `drop` mechanism in the `DropSinglePhase1155` extension is a distribution mechanism for lazy minted tokens. It lets
- *  you set restrictions such as a price to charge, an allowlist etc. when an address atttempts to mint lazy minted tokens.
- *
  *  The `ERC721Drop` contract lets you lazy mint tokens, and distribute those lazy minted tokens via the drop mechanism.
  */
 
-contract Cities is
+contract Farconic is
     ERC1155,
     ContractMetadata,
     Royalty,
     BatchMintMetadata,
     PrimarySale,
+    AllowList,
     LazyMint,
     PermissionsEnumerable,
-    Drop1155,
     CitiesSignatureClaim,
     Multicall
 {
@@ -66,24 +61,35 @@ contract Cities is
     /// @dev The value is higher than allowed
     error MaxExceeded();
 
+    /// @notice Emitted when tokens are claimed.
+    event TokensClaimed(
+        address indexed claimer,
+        address indexed receiver,
+        uint256 tokenId,
+        uint256 quantityClaimed
+    );
+
     /*///////////////////////////////////////////////////////////////
                             State variables
     //////////////////////////////////////////////////////////////*/
+
+    /// @dev the price & currency for claiming tokens
+    uint16 public freeClaimThreshold = 10;
+    uint16 public allowListedClaimThreshold = 100;
+    uint256 public price = 0 ether;
+    uint256 public allowListPrice = 0 ether;
+    address public currency = CurrencyTransferLib.NATIVE_TOKEN;
+
+    /// @dev the maximum number of tokens that can be claimed using the claimRandomBatch function
+    uint256 public maxBatchClaimSize = 10;
 
     /// @dev Only MINTER_ROLE holders can sign off on `ClaimRequests and lazy mint tokens.
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     /// @dev Only METADATA_ROLE holders can reveal the URI for a batch of delayed reveal NFTs, and update or freeze batch metadata.
     bytes32 public constant METADATA_ROLE = keccak256("METADATA_ROLE");
 
-    /// @dev the maximum number of tokens that can be claimed in a single batch
-    uint8 public maxBatchClaimSize = 10;
-
-    function contractType() external pure returns (bytes32) {
-        return bytes32("DropERC1155");
-    }
-
     /*//////////////////////////////////////////////////////////////
-                        Mappings
+                            Mappings
     //////////////////////////////////////////////////////////////*/
 
     /**
@@ -95,6 +101,9 @@ contract Cities is
     /// @dev Mapping from token ID => the address of the recipient of primary sales.
     mapping(uint256 => address) public saleRecipient;
 
+    /// @notice Keeps track of how many tokens a given address has claimed.
+    mapping(address => uint256) public claimedTokens;
+
     /*///////////////////////////////////////////////////////////////
                                Events
     //////////////////////////////////////////////////////////////*/
@@ -103,7 +112,7 @@ contract Cities is
     event SaleRecipientForTokenUpdated(uint256 indexed tokenId, address saleRecipient);
 
     /*///////////////////////////////////////////////////////////////
-                            Constructor
+                                Constructor
     //////////////////////////////////////////////////////////////*/
 
     /**
@@ -169,6 +178,51 @@ contract Cities is
      */
     function setMaxClaimBatchSize(uint8 max) external onlyRole(DEFAULT_ADMIN_ROLE) {
         maxBatchClaimSize = max;
+    }
+
+    /**
+     * @notice Sets the price for claiming a token
+     *
+     * @param _price the price in wei to claim a token
+     */
+    function setPrice(uint256 _price) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        price = _price;
+    }
+
+    /**
+     * @notice Sets the price for an allow-listed address to claim a token
+     *
+     * @param _price the price in wei for an allow-listed address to claim a token
+     */
+    function setAllowListPrice(uint256 _price) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        allowListPrice = _price;
+    }
+
+    /**
+     * @notice Sets the currency for claiming a token
+     *
+     * @param _currency the currency to pay for claiming a token
+     */
+    function setCurrency(address _currency) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        currency = _currency;
+    }
+
+    /**
+     * @notice Sets the free claim threshold
+     *
+     * @param _threshold the threshold for free claims
+     */
+    function setFreeClaimThreshold(uint16 _threshold) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        freeClaimThreshold = _threshold;
+    }
+
+    /**
+     * @notice Sets the allow-listed claim threshold
+     *
+     * @param _threshold the threshold for allow-listed claims
+     */
+    function setAllowListedClaimThreshold(uint16 _threshold) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        allowListedClaimThreshold = _threshold;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -252,62 +306,52 @@ contract Cities is
     function claim(
         address _receiver,
         uint256 _tokenId,
-        uint256 _quantity,
-        address _currency,
-        uint256 _pricePerToken,
-        AllowlistProof calldata _allowlistProof,
-        bytes memory _data
-    ) public payable override onlyRole(DEFAULT_ADMIN_ROLE){
-        super.claim(_receiver, _tokenId, _quantity, _currency, _pricePerToken, _allowlistProof, _data);
+        uint256 _quantity
+    ) public payable {
+
+        if (_tokenId >= nextTokenIdToLazyMint) {
+            revert InvalidId();
+        }
+
+        // Determine the price
+        uint256 _price = claimedTokens[msg.sender] <= freeClaimThreshold
+            ? 0
+            : isAllowListed(msg.sender) || hasAllowListedBalance(msg.sender)
+                ? claimedTokens[msg.sender] <= allowListedClaimThreshold
+                    ? allowListPrice
+                    : price
+                : price;
+
+        // If there's a price, collect price.
+        collectPriceOnClaim(_tokenId, _price, address(0), _quantity);
+
+        // Mint the relevant NFTs to claimer.
+        _mint(_receiver, _tokenId, _quantity, "");
+
+        // Run after-claim logic.
+        claimedTokens[_receiver] += _quantity;
+
+        emit TokensClaimed(msg.sender, _receiver, _tokenId, _quantity);
+
     }
 
     /// @dev Lets an account claim a batch of tokens
     /// @notice the tokens must have the same pricing and allowList
     function claimRandomBatch(
         uint8 _batchSize,
-        uint256 _min,
-        uint256 _max,
-        address _receiver,
-        address _currency,
-        uint256 _pricePerToken,
-        AllowlistProof calldata _allowlistProof,
-        bytes memory _data
+        uint16 _min,
+        uint16 _max,
+        address _receiver
     ) public payable {
 
         if (_batchSize > maxBatchClaimSize) {
             revert MaxExceeded();
         }
 
-        uint8[] memory tokenIds = getRandomNumbers(_min, _max, _batchSize);
+        uint16[] memory tokenIds = getRandomNumbers(_min, _max, _batchSize);
 
-        for(uint i = 0; i < tokenIds.length; i++){
-            _beforeClaim(tokenIds[i], _receiver, 1, _currency, _pricePerToken, _allowlistProof, _data);
-
-            uint256 activeConditionId = getActiveClaimConditionId(tokenIds[i]);
-
-            verifyClaim(
-                activeConditionId,
-                _dropMsgSender(),
-                tokenIds[i],
-                1,
-                _currency,
-                _pricePerToken,
-                _allowlistProof
-            );
-
-            // Update contract state.
-            claimCondition[tokenIds[i]].conditions[activeConditionId].supplyClaimed += 1;
-            claimCondition[tokenIds[i]].supplyClaimedByWallet[activeConditionId][_dropMsgSender()] += 1;
-
-            // If there's a price, collect price.
-            collectPriceOnClaim(tokenIds[i], address(0), 1, _currency, _pricePerToken);
-
-            // Mint the relevant NFTs to claimer.
-            transferTokensOnClaim(_receiver, tokenIds[i], 1);
-
-            emit TokensClaimed(activeConditionId, _dropMsgSender(), _receiver, tokenIds[i], 1);
-
-            _afterClaim(tokenIds[i], _receiver, 1, _currency, _pricePerToken, _allowlistProof, _data);
+        for(uint8 i = 0; i < tokenIds.length; i++){
+            claim(_receiver, tokenIds[i], 1);
         }
     }
 
@@ -335,7 +379,7 @@ contract Cities is
     function claimWithSignature(
         ClaimRequest calldata _req,
         bytes calldata _signature
-    ) external payable override returns (address signer){
+    ) external override returns (address signer) {
 
         if(_req.outTokenId >= nextTokenIdToMint()) {
             revert InvalidId();
@@ -353,7 +397,7 @@ contract Cities is
         }
  
         // claim output token
-        transferTokensOnClaim(_req.to, _req.outTokenId, 1);
+        _mint(_req.to, _req.outTokenId, 1, "");
  
         emit TokensClaimedWithSignature(signer, _req.to, _req.outTokenId, _req);
     }
@@ -362,20 +406,24 @@ contract Cities is
                         Internal functions
     //////////////////////////////////////////////////////////////*/
 
-    function getRandomNumbers(uint256 min, uint256 max, uint8 count) internal view returns (uint8[] memory) {
+    function getRandomNumbers(uint16 min, uint16 max, uint8 count) internal view returns (uint16[] memory) {
         require(max >= min, "Invalid range");
         require(count > 0, "Count must be greater than zero");
 
         // Initialize the array to store random numbers
-        uint8[] memory randomNumbers = new uint8[](count);
+        uint16[] memory randomNumbers = new uint16[](count);
 
-        // Calculate the seed using block timestamp and gasleft
-        uint256 seed = uint256(keccak256(abi.encodePacked(block.timestamp, gasleft())));
+        // Calculate the seed
+        uint256 seed = uint256(keccak256(abi.encodePacked(
+            tx.origin,
+            blockhash(block.number - 1),
+            block.timestamp
+        )));
 
         // Generate random numbers and fill the array
         for (uint8 i = 0; i < count; i++) {
             // Use modulo operation to get a random number within the range
-            randomNumbers[i] = uint8(min + (seed % (max - min + 1)));
+            randomNumbers[i] = uint16(min + (seed % (max - min + 1)));
             // Update the seed for the next iteration
             seed = uint256(keccak256(abi.encodePacked(seed)));
         }
@@ -384,52 +432,20 @@ contract Cities is
     }
 
     /**
-     * @dev Runs before every `claim` function call.
-     *
-     * @param _tokenId The tokenId of the NFT being claimed.
-     */
-    function _beforeClaim(
-        uint256 _tokenId,
-        address,
-        uint256,
-        address,
-        uint256,
-        AllowlistProof calldata,
-        bytes memory
-    ) internal view virtual override {
-        if (_tokenId >= nextTokenIdToLazyMint) {
-            revert InvalidId();
-        }
-    }
-
-    /// @dev Runs after every `claim` function call.
-    function _afterClaim(
-        uint256 _tokenId,
-        address _receiver,
-        uint256 _quantity,
-        address _currency,
-        uint256 _pricePerToken,
-        AllowlistProof calldata _allowlistProof,
-        bytes memory _data
-    ) internal override {
-    }
-
-    /**
      * @dev Collects and distributes the primary sale value of NFTs being claimed.
      *
+     * @param _tokenId              The tokenId of the NFT being claimed.
+     * @param _price                The price of the NFT being claimed.
      * @param _primarySaleRecipient The address to which primary sale revenue should be sent.
      * @param _quantityToClaim      The quantity of NFTs being claimed.
-     * @param _currency             The currency in which the NFTs are being sold.
-     * @param _pricePerToken        The price per NFT being claimed.
      */
     function collectPriceOnClaim(
         uint256 _tokenId,
+        uint256 _price,
         address _primarySaleRecipient,
-        uint256 _quantityToClaim,
-        address _currency,
-        uint256 _pricePerToken
-    ) internal override {
-        if (_pricePerToken == 0) {
+        uint256 _quantityToClaim
+    ) internal {
+        if (_price == 0) {
             if (msg.value > 0) {
                 revert CurrencyTransferLib.CurrencyTransferLibMismatchedValue(0, msg.value);
             }
@@ -440,10 +456,10 @@ contract Cities is
             ? (saleRecipient[_tokenId] == address(0) ? primarySaleRecipient() : saleRecipient[_tokenId])
             : _primarySaleRecipient;
 
-        uint256 totalPrice = _quantityToClaim * _pricePerToken;
+        uint256 totalPrice = _quantityToClaim * _price;
 
         bool validMsgValue;
-        if (_currency == CurrencyTransferLib.NATIVE_TOKEN) {
+        if (currency == CurrencyTransferLib.NATIVE_TOKEN) {
             validMsgValue = msg.value == totalPrice;
         } else {
             validMsgValue = msg.value == 0;
@@ -452,22 +468,7 @@ contract Cities is
             revert CurrencyTransferLib.CurrencyTransferLibMismatchedValue(totalPrice, msg.value);
         }
 
-        CurrencyTransferLib.transferCurrency(_currency, msg.sender, _saleRecipient, totalPrice);
-    }
-
-    /**
-     * @dev Transfers the NFTs being claimed.
-     *
-     * @param _to                    The address to which the NFTs are being transferred.
-     * @param _tokenId               The tokenId of the NFTs being claimed.
-     * @param _quantityBeingClaimed  The quantity of NFTs being claimed.
-     */
-    function transferTokensOnClaim(
-        address _to,
-        uint256 _tokenId,
-        uint256 _quantityBeingClaimed
-    ) internal override {
-        _mint(_to, _tokenId, _quantityBeingClaimed, "");
+        CurrencyTransferLib.transferCurrency(currency, msg.sender, _saleRecipient, totalPrice);
     }
 
     /**
@@ -518,23 +519,18 @@ contract Cities is
         return hasRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-    /// @dev Checks whether platform fee info can be set in the given execution context.
-    function _canSetClaimConditions() internal view override returns (bool) {
-        return hasRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    }
-
     /// @dev Returns whether lazy minting can be done in the given execution context.
     function _canLazyMint() internal view virtual override returns (bool) {
         return hasRole(MINTER_ROLE, msg.sender);
     }
 
-    /// @dev Checks whether NFTs can be revealed in the given execution context.
-    function _canReveal() internal view virtual returns (bool) {
-        return hasRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    }
-
     /// @dev Returns whether a given address is authorized to sign claim requests.
     function _canSignClaimRequest(address _signer) internal view virtual override returns (bool) {
         return hasRole(MINTER_ROLE, _signer);
+    }
+
+    /// @dev Returns whether a given address is authorized to modify the allowList.
+    function _canModifyAllowList() internal view override returns (bool) {
+        return hasRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 }
