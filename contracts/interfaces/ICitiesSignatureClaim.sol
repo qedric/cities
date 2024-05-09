@@ -63,5 +63,5 @@ interface ICitiesSignatureClaim {
     function claimWithSignature(
         ClaimRequest calldata req,
         bytes calldata signature
-    ) external payable returns (address signer);
+    ) external returns (address signer);
 }
