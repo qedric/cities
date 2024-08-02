@@ -11,9 +11,9 @@
     "mocha": "^10.4.0"
   },
   "dependencies": {
-    "@thirdweb-dev/contracts": "^3.8.0",
+    "@thirdweb-dev/contracts": "^3.15.0",
     "merkletreejs": "^0.3.11",
-    "thirdweb": "^5.8.0",
+    "thirdweb": "^5.43.2",
     "uuid": "^9.0.1"
   }
 }
