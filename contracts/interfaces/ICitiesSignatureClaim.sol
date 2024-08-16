@@ -10,22 +10,22 @@ pragma solidity ^0.8.0;
  *  At a high level, this means you can authorize some external party to claim tokens on your contract, and specify what exactly will be
  *  claimed by that external party.
  * 
- *  Q - removed superfluous params and added params to provide the input tokens to burn
+ *  Q - removed superfluous params and added params to provide the input tokens to lock
  */
 interface ICitiesSignatureClaim {
     /**
      *  @notice The body of a request to claim tokens.
      *
      *  @param to The receiver of the tokens to claim.
-     *  @param inTokenIds The tokenIds of the tokens to burn.
+     *  @param inTokenAddresses The token addresses of the tokens to lock.
      *  @param outTokenId The tokenId of the token to claim.
      *  @param validityStartTimestamp The unix timestamp after which the payload is valid.
      *  @param validityEndTimestamp The unix timestamp at which the payload expires.
      *  @param uid A unique identifier for the payload.
      */
-    struct ClaimRequest {
+    struct StakeRequest {
         address to;
-        uint256[] inTokenIds;
+        address[] inTokenAddresses;
         uint256 outTokenId;
         uint128 validityStartTimestamp;
         uint128 validityEndTimestamp;
@@ -33,11 +33,11 @@ interface ICitiesSignatureClaim {
     }
 
     /// @dev Emitted when tokens are claimed.
-    event TokensClaimedWithSignature(
+    event TokensStakedWithSignature(
         address indexed signer,
         address indexed recipient,
         uint256 indexed tokenIdClaimed,
-        ClaimRequest claimRequest
+        StakeRequest claimRequest
     );
 
     /**
@@ -50,18 +50,18 @@ interface ICitiesSignatureClaim {
      *  returns (success, signer) Result of verification and the recovered address.
      */
     function verify(
-        ClaimRequest calldata req,
+        StakeRequest calldata req,
         bytes calldata signature
     ) external view returns (bool success, address signer);
 
     /**
-     *  @notice Claims tokens according to the provided request.
+     *  @notice Stakes tokens according to the provided request and optionally mints a new token.
      *
      *  @param req The payload / claim request.
      *  @param signature The signature produced by an account signing the request.
      */
-    function claimWithSignature(
-        ClaimRequest calldata req,
+    function stake(
+        StakeRequest calldata req,
         bytes calldata signature
     ) external returns (address signer);
 }
