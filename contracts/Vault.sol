@@ -23,6 +23,9 @@ abstract contract Vault is IERC1155Receiver {
     event TokensStaked(address indexed user, StakeInfo stakeInfo);
     event TokensRedeemed(address indexed user, StakeInfo stakeInfo);
 
+        /// @dev the minimum period in days that a token must be staked for
+    uint16 public MIN_STAKE_DAYS = 90;
+
     function _stakeTokens(address[] memory tokens, uint256 daysToLock, uint256 tokenId) internal {
         require(tokens.length > 0, "No tokens to stake");
 

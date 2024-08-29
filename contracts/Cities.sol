@@ -11,9 +11,7 @@ import "@thirdweb-dev/contracts/extension/LazyMint.sol";
 import "@thirdweb-dev/contracts/extension/PermissionsEnumerable.sol";
 import "@thirdweb-dev/contracts/extension/Multicall.sol";
 import "@thirdweb-dev/contracts/lib/Strings.sol";
-import { CurrencyTransferLib } from "@thirdweb-dev/contracts/lib/CurrencyTransferLib.sol";
-import "./CitiesSignatureClaim.sol";
-import { Vault } from "./Vault.sol";
+import "./CitiesSignedRequest.sol";
 
 /**
  *      BASE:      ERC1155Base
@@ -34,31 +32,21 @@ import { Vault } from "./Vault.sol";
  *  The `ERC721Drop` contract lets you lazy mint tokens, and distribute those lazy minted tokens via the drop mechanism.
  */
 
-contract Farconic is
+contract Cities is
     ERC1155,
     ContractMetadata,
     Royalty,
     BatchMintMetadata,
     LazyMint,
     PermissionsEnumerable,
-    CitiesSignatureClaim,
-    Multicall,
-    Vault
+    CitiesSignedRequest,
+    Multicall
 {
     using Strings for uint256;
-
-    /// @dev not enough tokens in wallet to perform the action
-    error InsufficientBalance();
-
-    /// @dev token id provided is invalid
-    error InvalidId();
 
     /*///////////////////////////////////////////////////////////////
                             State variables
     //////////////////////////////////////////////////////////////*/
-
-    /// @dev the minimum period in days that a token must be staked for
-    uint16 public MIN_STAKE_DAYS = 90;
 
     /// @dev Only MINTER_ROLE holders can sign off on `ClaimRequests and lazy mint tokens.
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -74,10 +62,6 @@ contract Farconic is
      *  @dev Mapping from tokenId => total circulating supply of NFTs of that tokenId.
      */
     mapping(uint256 => uint256) public totalSupply;
-
-    /*///////////////////////////////////////////////////////////////
-                               Events
-    //////////////////////////////////////////////////////////////*/
 
     /*///////////////////////////////////////////////////////////////
                                 Constructor
@@ -138,7 +122,7 @@ contract Farconic is
      * @dev See ERC165: https://eips.ethereum.org/EIPS/eip-165
      * @inheritdoc IERC165
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155, IERC165, Vault) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155, IERC165) returns (bool) {
         return
             interfaceId == 0x01ffc9a7 || // ERC165 Interface ID for ERC165
             interfaceId == 0xd9b67a26 || // ERC165 Interface ID for ERC1155
@@ -171,47 +155,56 @@ contract Farconic is
     //////////////////////////////////////////////////////////////*/
 
     /**
-     *  @notice Stakes the provided input tokens. If a valid outTokenId is provided, it is minted to the recipient.
+     *  @notice mints a given quantity of the requested tokenId to the recipient.
      *  @dev    Only an account holding MINTER_ROLE can sign claim requests.
      *
-     *  @param _req The payload / stake request.
+     *  @param _req The payload / mint request.
      *  @param _signature The signature produced by an account signing the request.
      * 
      * struct StakeRequest {
         address to;
-        address[] inTokenAddresses;
-        uint256 outTokenId;
+        uint256 tokenId;
+        uint256 qty;
         uint128 validityStartTimestamp;
         uint128 validityEndTimestamp;
         bytes32 uid;
     }
      * 
      */
-    function stake(
-        StakeRequest calldata _req,
+    function mintWithSignature(
+        Request calldata _req,
+        bytes calldata _signature
+    ) external override returns (address signer) {
+
+        // verify and process payload.
+        signer = _processRequest(_req, _signature);
+ 
+        // mint token only if the token id is valid
+        if (_req.tokenId <= nextTokenIdToMint()) {
+            _mint(_req.targetAddress, _req.tokenId, _req.qty, "");
+        }
+
+        emit TokensMintedWithSignature(signer, _req.targetAddress, _req.tokenId, _req.qty);
+    }
+
+
+    /**
+     *  @notice Burns a given qty of the requestor's balance the requested tokenId
+     *  @dev    Only an account holding MINTER_ROLE can sign claim requests.
+     *
+     *  @param _req The payload / stake request.
+     *  @param _signature The signature produced by an account signing the request.
+     * 
+     */
+    function burnWithSignature(
+        Request calldata _req,
         bytes calldata _signature
     ) external override returns (address signer) {
 
         // verify and process payload.
         signer = _processRequest(_req, _signature);
 
-        _stakeTokens(_req.inTokenAddresses, MIN_STAKE_DAYS, _req.outTokenId);
- 
-        // claim output token only if the token id is valid
-        if (_req.outTokenId <= nextTokenIdToMint()) {
-            _mint(_req.to, _req.outTokenId, 1, "");
-        }
-
-        emit TokensStakedWithSignature(signer, _req.to, _req.outTokenId, _req);
-    }
-
-
-    function redeemBuildings(uint256 stakeIndex) external {
-
-        StakeInfo memory stakeInfo = userStakes[msg.sender][stakeIndex];
-        _burn(msg.sender, stakeInfo.tokenId, 1);
-
-        _redeemTokens(stakeIndex);
+        _burn(msg.sender, _req.tokenId, _req.qty);
     }
 
     /*///////////////////////////////////////////////////////////////
@@ -267,7 +260,7 @@ contract Farconic is
     }
 
     /// @dev Returns whether a given address is authorized to sign claim requests.
-    function _canSignClaimRequest(address _signer) internal view virtual override returns (bool) {
+    function _canSignRequest(address _signer) internal view virtual override returns (bool) {
         return hasRole(MINTER_ROLE, _signer);
     }
 }

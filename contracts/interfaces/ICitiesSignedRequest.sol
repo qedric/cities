@@ -4,40 +4,49 @@ pragma solidity ^0.8.0;
 /// @author thirdweb, modified by Q - https://warpcast.com/berlin
 
 /**
- *  The 'signature claiming' mechanism used in thirdweb Token smart contracts is a way for a contract admin to authorize an external party's
+ *  The 'signature minting' mechanism used in thirdweb Token smart contracts is a way for a contract admin to authorize an external party's
  *  request to claim tokens on the admin's contract.
  *
  *  At a high level, this means you can authorize some external party to claim tokens on your contract, and specify what exactly will be
  *  claimed by that external party.
  * 
- *  Q - removed superfluous params and added params to provide the input tokens to lock
+ *  Q - removed superfluous params and added burn request
  */
-interface ICitiesSignatureClaim {
+interface ICitiesSignedRequest {
+
     /**
-     *  @notice The body of a request to claim tokens.
+     *  @notice The body of a request to mint or burn tokens.
      *
-     *  @param to The receiver of the tokens to claim.
-     *  @param inTokenAddresses The token addresses of the tokens to lock.
-     *  @param outTokenId The tokenId of the token to claim.
+     *  @param targetAddress The receiver/holder of the tokens.
+     *  @param tokenId The token id to mint/burn.
+     *  @param qty The qty of the token to mint/burn.
      *  @param validityStartTimestamp The unix timestamp after which the payload is valid.
      *  @param validityEndTimestamp The unix timestamp at which the payload expires.
      *  @param uid A unique identifier for the payload.
      */
-    struct StakeRequest {
-        address to;
-        address[] inTokenAddresses;
-        uint256 outTokenId;
+    struct Request {
+        address targetAddress;
+        uint256 tokenId;
+        uint256 qty;
         uint128 validityStartTimestamp;
         uint128 validityEndTimestamp;
         bytes32 uid;
     }
 
-    /// @dev Emitted when tokens are claimed.
-    event TokensStakedWithSignature(
+    /// @dev Emitted when tokens are minted.
+    event TokensMintedWithSignature(
         address indexed signer,
         address indexed recipient,
-        uint256 indexed tokenIdClaimed,
-        StakeRequest claimRequest
+        uint256 tokenId,
+        uint256 qty
+    );
+
+    /// @dev Emitted when tokens are burned.
+    event TokensBurnedWithSignature(
+        address indexed signer,
+        address indexed holder,
+        uint256 tokenId,
+        uint256 qty
     );
 
     /**
@@ -50,18 +59,29 @@ interface ICitiesSignatureClaim {
      *  returns (success, signer) Result of verification and the recovered address.
      */
     function verify(
-        StakeRequest calldata req,
+        Request calldata req,
         bytes calldata signature
     ) external view returns (bool success, address signer);
 
     /**
-     *  @notice Stakes tokens according to the provided request and optionally mints a new token.
+     *  @notice Mints tokens according to the provided request.
      *
-     *  @param req The payload / claim request.
+     *  @param req The payload / request.
      *  @param signature The signature produced by an account signing the request.
      */
-    function stake(
-        StakeRequest calldata req,
+    function mintWithSignature(
+        Request calldata req,
+        bytes calldata signature
+    ) external returns (address signer);
+
+    /**
+     *  @notice Burns tokens according to the provided request.
+     *
+     *  @param req The payload / request.
+     *  @param signature The signature produced by an account signing the request.
+     */
+    function burnWithSignature(
+        Request calldata req,
         bytes calldata signature
     ) external returns (address signer);
 }
