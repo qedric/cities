@@ -14,10 +14,7 @@ abstract contract CitiesSignedRequest is EIP712, ICitiesSignedRequest {
             "Request(address targetAddress,uint256 tokenId,uint256 qty,uint128 validityStartTimestamp,uint128 validityEndTimestamp,bytes32 uid)"
         );
 
-    /// @dev Mapping from claim request UID => whether the claim request is processed.
-    mapping(bytes32 => bool) private claimed;
-
-    constructor() EIP712("CitiesSignatureClaim", "1") {}
+    constructor() EIP712("CitiesSignedRequest", "1") {}
 
     /// @dev Verifies that a claim request is signed by an account holding MINTER_ROLE (at the time of the function call).
     function verify(
@@ -25,14 +22,14 @@ abstract contract CitiesSignedRequest is EIP712, ICitiesSignedRequest {
         bytes calldata _signature
     ) public view override returns (bool success, address signer) {
         signer = _hashTypedDataV4(keccak256(_encodeRequest(_req))).recover(_signature);
-        success = !claimed[_req.uid] && _canSignRequest(signer);
+        success = _canSignRequest(signer);
     }
 
     /// @dev Returns whether a given address is authorized to sign requests.
     function _canSignRequest(address _signer) internal view virtual returns (bool);
 
     /// @dev Verifies a claim request and marks the request as claimed.
-    function _processRequest(Request calldata _req, bytes calldata _signature) internal returns (address signer) {
+    function _processRequest(Request calldata _req, bytes calldata _signature) internal view returns (address signer) {
         bool success;
         (success, signer) = verify(_req, _signature);
 
@@ -42,8 +39,6 @@ abstract contract CitiesSignedRequest is EIP712, ICitiesSignedRequest {
             "Request expired"
         );
         require(_req.targetAddress != address(0), "recipient undefined");
-
-        claimed[_req.uid] = true;
     }
 
     /// @dev Resolves 'stack too deep' error in `recoverAddress`.

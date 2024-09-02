@@ -1,7 +1,7 @@
 [
     {
         "description": "Amsterdam is a charming city with a population of over 880,000, known for its picturesque canals, vibrant arts and cultural scene, and historical heritage.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/amsterdam",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Amsterdam.jpg",
         "name": "Amsterdam",
         "attributes": [
@@ -53,7 +53,7 @@
     },
     {
         "description": "Atlanta is the capital city of Georgia and a major hub of commerce and culture with a population of just over 4.9 million.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/atlanta",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Atlanta.jpg",
         "name": "Atlanta",
         "attributes": [
@@ -105,7 +105,7 @@
     },
     {
         "description": "Calgary is a bustling city in Alberta, Canada known for its stunning mountain views, diverse culture, and thriving energy industry.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/calgary",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Calgary.jpg",
         "name": "Calgary",
         "attributes": [
@@ -157,7 +157,7 @@
     },
     {
         "description": "Charlotte is a rapidly growing city in North Carolina, known for its banking and finance industry, historical landmarks, and southern charm.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/charlotte",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Charlotte.jpg",
         "name": "Charlotte",
         "attributes": [
@@ -205,7 +205,7 @@
     },
     {
         "description": "Chicago is a dynamic city in Illinois, USA, renowned for its rich history, iconic architecture, vibrant arts and culture scene, diverse food options, and lakefront location.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/chicago",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Chicago.jpg",
         "name": "Chicago",
         "attributes": [
@@ -269,7 +269,7 @@
     },
     {
         "description": "Cincinnati is a historic city in Ohio, USA, known for its scenic riverfront, thriving cultural institutions, and diverse food scene, as well as its contributions to American history, including the Underground Railroad and baseball's first professional team.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/cincinnati",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Cincinnati.jpg",
         "name": "Cincinnati",
         "attributes": [
@@ -325,7 +325,7 @@
     },
     {
         "description": "Cleveland is a city in Ohio, USA, renowned for its rich cultural heritage, including its museums, performing arts institutions, and Rock and Roll Hall of Fame, as well as its location on the shores of Lake Erie and its thriving industrial history.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/cleveland",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Cleveland.jpg",
         "name": "Cleveland",
         "attributes": [
@@ -377,7 +377,7 @@
     },
     {
         "description": "Dallas is a cosmopolitan city in Texas, USA, known for its towering skyscrapers, rich history, diverse culture, and being a major center for commerce, technology, and entertainment.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/dallas",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Dallas.jpg",
         "name": "Dallas",
         "attributes": [
@@ -421,7 +421,7 @@
     },
     {
         "description": "Denver is a scenic city in Colorado, USA, known for its majestic mountain views, thriving outdoor recreation scene, rich cultural institutions, and being a hub for the arts, science, and technology industries.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/denver",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Denver.jpg",
         "name": "Denver",
         "attributes": [
@@ -473,7 +473,7 @@
     },
     {
         "description": "Detroit is a city in Michigan, USA, with a rich industrial history, including being the birthplace of the American automobile industry, and a thriving arts and culture scene, including renowned museums and music venues, as well as a resilient spirit embodied in its comeback from economic challenges.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/detroit",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Detroit.jpg",
         "name": "Detroit",
         "attributes": [
@@ -533,7 +533,7 @@
     },
     {
         "description": "Dubai is a modern and fast-growing city in the United Arab Emirates, renowned for its towering skyscrapers, luxurious shopping, and vibrant cultural scene, as well as its innovative spirit embodied in iconic landmarks such as the Burj Khalifa and the Palm Jumeirah.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/dubai",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Dubai.jpg",
         "name": "Dubai",
         "attributes": [
@@ -601,7 +601,7 @@
     },
     {
         "description": "Edmonton is the capital city of Alberta, Canada, known for its stunning natural beauty, including the North Saskatchewan River Valley and Elk Island National Park, as well as its rich cultural scene and thriving energy industry.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/edmonton",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Edmonton.jpg",
         "name": "Edmonton",
         "attributes": [
@@ -649,7 +649,7 @@
     },
     {
         "description": "Auckland is a large metropolitan city in the North Island of New Zealand with a population of over 1.6 million.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/auckland",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Auckland.jpg",
         "name": "Auckland",
         "attributes": [
@@ -705,7 +705,7 @@
     },
     {
         "description": "Frankfurt is a major financial and cultural center in Germany, known for its towering skyscrapers, rich history, thriving arts scene, and being a hub for commerce, with a bustling airport and the European Central Bank headquartered in the city.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/frankfurt",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Frankfurt.jpg",
         "name": "Frankfurt",
         "attributes": [
@@ -761,7 +761,7 @@
     },
     {
         "description": "Hong Kong is a vibrant global financial center known for its unique blend of Western and Chinese cultures, towering skyscrapers, and bustling shopping scene.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/hong-kong",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Hong%20Kong.jpg",
         "name": "Hong Kong",
         "attributes": [
@@ -821,7 +821,7 @@
     },
     {
         "description": "Houston is a diverse and dynamic city in Texas, USA, known for its thriving energy industry, international cuisine, and numerous cultural attractions, including the Space Center Houston and the Museum District.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/houston",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Houston.jpg",
         "name": "Houston",
         "attributes": [
@@ -869,7 +869,7 @@
     },
     {
         "description": "Istanbul is a historic and culturally rich city, straddling Europe and Asia, known for its stunning architecture, including the Hagia Sophia and the Blue Mosque, vibrant food scene, and rich history, dating back to the Roman Empire.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/istanbul",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Istanbul.jpg",
         "name": "Istanbul",
         "attributes": [
@@ -917,7 +917,7 @@
     },
     {
         "description": "Jakarta is the capital and largest city of Indonesia, known for its rich history, bustling street life, and unique blend of traditional and modern cultures, as well as its growing economic significance in Southeast Asia.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/jakarta",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Jakarta.jpg",
         "name": "Jakarta",
         "attributes": [
@@ -965,7 +965,7 @@
     },
     {
         "description": "Kuala Lumpur is the capital city of Malaysia, known for its iconic skyscrapers, vibrant street life, rich cultural heritage, and unique blend of traditional and modern architecture, including the famous Petronas Towers.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/kuala-lumpur",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/KualaLumpur.jpg",
         "name": "Kuala Lumpur",
         "attributes": [
@@ -1009,7 +1009,7 @@
     },
     {
         "description": "Liverpool is a city in England, known for its rich cultural heritage, including being the birthplace of The Beatles and a hub of the maritime trade, as well as its contributions to the arts, including the renowned Liverpool Philharmonic Orchestra and numerous museums and galleries.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/liverpool",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Liverpool.jpg",
         "name": "Liverpool",
         "attributes": [
@@ -1053,7 +1053,7 @@
     },
     {
         "description": "London is a cosmopolitan city in England, known for its rich history, iconic landmarks, diverse cultural scene, and being a global hub for finance, arts, and commerce.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/london",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/London.jpg",
         "name": "London",
         "attributes": [
@@ -1109,7 +1109,7 @@
     },
     {
         "description": " Los Angeles is a city in California, USA, known for its entertainment industry, including Hollywood and its film studios, diverse cultures, stunning beaches, and iconic landmarks such as the Sunset Strip and the Hollywood Sign.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/los-angeles",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/LosAngeles.jpg",
         "name": "Los Angeles",
         "attributes": [
@@ -1157,7 +1157,7 @@
     },
     {
         "description": "Madrid is the capital and largest city of Spain, known for its rich history, stunning architecture, vibrant cultural scene, and being a hub of politics, art, and commerce, with famous landmarks such as the Royal Palace of Madrid and the Prado Museum.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/madrid",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Madrid.jpg",
         "name": "Madrid",
         "attributes": [
@@ -1197,7 +1197,7 @@
     },
     {
         "description": "Located in Central Texas on the eastern edge of the American Southwest, Austin is the capital of the state of Texas, the Lone Star State. Its population is slightly less than 1 million.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/austin",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Austin.jpg",
         "name": "Austin",
         "attributes": [
@@ -1245,7 +1245,7 @@
     },
     {
         "description": "Melbourne is a vibrant and culturally rich city in Australia, known for its diverse arts scene, beautiful gardens, and sporting culture, including the famous Melbourne Cricket Ground, as well as its reputation as a foodie destination.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/melbourne",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Melbourne.jpg",
         "name": "Melbourne",
         "attributes": [
@@ -1305,7 +1305,7 @@
     },
     {
         "description": "Memphis is a city in Tennessee, USA, known for its rich musical heritage, including being the birthplace of blues, rock 'n' roll, and soul music, as well as its significant role in the Civil Rights Movement and its numerous cultural attractions, such as Graceland and the National Civil Rights Museum.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/memphis",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Memphis.jpg",
         "name": "Memphis",
         "attributes": [
@@ -1353,7 +1353,7 @@
     },
     {
         "description": "Mexico City is the capital and largest city of Mexico, known for its rich history, including Aztec and colonial influences, vibrant cultural scene, and numerous museums, including the National Museum of Anthropology, as well as its bustling street life and growing international significance.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/mexico-city",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/MexicoCity.jpg",
         "name": "Mexico City",
         "attributes": [
@@ -1421,7 +1421,7 @@
     },
     {
         "description": "Miami is a coastal city in Florida, USA, known for its diverse cultures, beautiful beaches, and vibrant nightlife, as well as its thriving arts and entertainment scene, including the famous Art Deco Historic District and the Perez Art Museum Miami.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/miami",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Miami.jpg",
         "name": "Miami",
         "attributes": [
@@ -1473,7 +1473,7 @@
     },
     {
         "description": "Milan is a city in Italy, known for its rich cultural heritage, fashion industry, stunning architecture, and being a hub for finance, commerce, and design, with famous landmarks such as the Gothic Cathedral and the Galleria Vittorio Emanuele II shopping center.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/milan",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Milan.jpg",
         "name": "Milan",
         "attributes": [
@@ -1521,7 +1521,7 @@
     },
     {
         "description": "Milwaukee is a city in Wisconsin, USA, known for its rich history, including being a hub of the brewing industry and being a major port on Lake Michigan, as well as its diverse arts scene, stunning architecture, and numerous cultural attractions, such as the Milwaukee Art Museum and the Harley-Davidson Museum.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/milwaukee",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Milwaukee.jpg",
         "name": "Milwaukee",
         "attributes": [
@@ -1569,7 +1569,7 @@
     },
     {
         "description": "Minneapolis is a city in Minnesota, USA, known for its natural beauty, including the chain of lakes and parks, thriving arts and music scenes, as well as its contributions to industry, including being a major hub of the milling industry, and its numerous cultural attractions, such as the Walker Art Center and the Mill City Museum.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/minneapolis",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Minneapolis.jpg",
         "name": "Minneapolis",
         "attributes": [
@@ -1617,7 +1617,7 @@
     },
     {
         "description": "Montreal is a culturally rich city in Quebec, Canada, known for its diverse history, including French colonial influences, thriving arts scene, and stunning architecture, such as the Notre-Dame Basilica and the Old Port, as well as its reputation as a hub of commerce and culture in Canada.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/montreal",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Montreal.jpg",
         "name": "Montreal",
         "attributes": [
@@ -1661,7 +1661,7 @@
     },
     {
         "description": "Moscow is the capital and largest city of Russia, known for its rich history, stunning architecture, including the iconic Red Square and St. Basil's Cathedral, and being a hub of politics and culture, with numerous museums, galleries, and theaters, as well as its unique blend of Soviet-era and modern structures.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/moscow",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Moscow.jpg",
         "name": "Moscow",
         "attributes": [
@@ -1713,7 +1713,7 @@
     },
     {
         "description": "Munich is a city in Germany, known for its rich cultural heritage, including being a hub of the arts and sciences, stunning architecture, such as the Nymphenburg Palace and the Marienplatz, and being a center of innovation and commerce, as well as its thriving food and beer scenes, particularly during its famous Oktoberfest celebration.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/munich",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Munich.jpg",
         "name": "Munich",
         "attributes": [
@@ -1761,7 +1761,7 @@
     },
     {
         "description": "Bangkok is a bustling city of contrasts, with a population of over 8 million and a rich mix of historic temples, modern skyscrapers, and vibrant street life.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/bangkok",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Bangkok.jpg",
         "name": "Bangkok",
         "attributes": [
@@ -1809,7 +1809,7 @@
     },
     {
         "description": "Nashville is a city in Tennessee, USA, known for its rich musical heritage, including being a hub of country music and a birthplace of numerous other genres, stunning architecture, such as the Ryman Auditorium, and being a center of commerce, tourism, and culture, with numerous museums, galleries, and theaters.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/nashville",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Nashville.jpg",
         "name": "Nashville",
         "attributes": [
@@ -1857,7 +1857,7 @@
     },
     {
         "description": "New York City, also known as 'The City That Never Sleeps,' is a bustling metropolis and the largest city in the United States, known for its iconic skyline, diverse cultures, vibrant arts scene, world-renowned cuisine, and being a hub of finance, media, and commerce, with numerous iconic landmarks such as the Statue of Liberty and the Empire State Building.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/new-york",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/NYC.jpg",
         "name": "New York",
         "attributes": [
@@ -1921,7 +1921,7 @@
     },
     {
         "description": "Paris is the capital of France, known as the 'City of Light,' and a hub of culture, art, fashion, and history, with numerous iconic landmarks, such as the Eiffel Tower, the Louvre Museum, and Notre-Dame Cathedral, as well as its stunning architecture, rich history, and reputation as one of the most romantic cities in the world.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/paris",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Paris.jpg",
         "name": "Paris",
         "attributes": [
@@ -1973,7 +1973,7 @@
     },
     {
         "description": "Philadelphia is a city in Pennsylvania, USA, known as the 'City of Brotherly Love' and the birthplace of American democracy, with numerous historic landmarks, such as Independence Hall and the Liberty Bell, vibrant arts scene, thriving food culture, and being a hub of commerce and industry, with numerous universities and hospitals.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/philadelphia",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Philadelphia.jpg",
         "name": "Philadelphia",
         "attributes": [
@@ -2033,7 +2033,7 @@
     },
     {
         "description": "Pittsburgh is a city in Pennsylvania, USA, known for its rich industrial history, including being a hub of steel production and innovation, stunning natural beauty, such as the confluence of the Allegheny and Monongahela rivers to form the Ohio River, and vibrant arts scene, with numerous museums, galleries, and theaters, as well as its thriving food and sports culture.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/pittsburgh",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Pittsburgh.jpg",
         "name": "Pittsburgh",
         "attributes": [
@@ -2089,7 +2089,7 @@
     },
     {
         "description": "Portland is a city in Oregon, USA, known for its progressive culture, vibrant arts scene, thriving food culture, including being a hub of farm-to-table cuisine, and stunning natural beauty, including numerous parks and forests, as well as its reputation for being a hub of sustainability and innovation, with numerous tech companies and alternative transportation options.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/portland",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Portland.jpg",
         "name": "Portland",
         "attributes": [
@@ -2145,7 +2145,7 @@
     },
     {
         "description": "Rio de Janeiro is a city in Brazil, known for its stunning natural beauty, including the iconic Christ the Redeemer statue and Guanabara Bay, vibrant culture, rich history, and reputation as a hub of music, dance, and Carnival celebrations, as well as its stunning beaches, such as Copacabana and Ipanema, and bustling nightlife.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/rio-de-janeiro",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Rio.jpg",
         "name": "Rio de Janeiro",
         "attributes": [
@@ -2185,7 +2185,7 @@
     },
     {
         "description": "Rome is the capital of Italy, known as the 'Eternal City' and a hub of history, art, and culture, with numerous iconic landmarks, such as the Colosseum, the Vatican, and the Trevi Fountain, rich history dating back to the Roman Empire, as well as its reputation as a culinary destination, with its delicious cuisine and numerous restaurants and cafes.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/rome",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Rome.jpg",
         "name": "Rome",
         "attributes": [
@@ -2229,7 +2229,7 @@
     },
     {
         "description": "San Diego is a city in California, USA, known for its stunning natural beauty, including its beaches and harbor, thriving tourism industry, rich cultural heritage, and vibrant arts scene, as well as its reputation as a hub of innovation, with numerous tech companies and research institutions, and its thriving food culture, with numerous farm-to-table restaurants and craft breweries.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/san-diego",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/SanDiego.jpg",
         "name": "San Diego",
         "attributes": [
@@ -2277,7 +2277,7 @@
     },
     {
         "description": "San Francisco is a city in California, USA, known for its iconic landmarks, such as the Golden Gate Bridge and Alcatraz Island, thriving tech industry, diverse and inclusive culture, rich history, and reputation as a hub of innovation, with numerous tech companies and startups, as well as its reputation for being a leader in sustainability and environmentalism, with numerous green initiatives and alternative transportation options.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/san-francisco",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/SanFrancisco.jpg",
         "name": "San Francisco",
         "attributes": [
@@ -2333,7 +2333,7 @@
     },
     {
         "description": "Barcelona is a Mediterranean city rich in history and cultural heritage, with a population of over 1.6 million.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/barcelona",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Barcelona.jpg",
         "name": "Barcelona",
         "attributes": [
@@ -2377,7 +2377,7 @@
     },
     {
         "description": "Seattle is a bustling Pacific Northwest city known for its thriving tech industry, cultural attractions, and natural beauty, including the iconic Space Needle and nearby mountains.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/seattle",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Seattle.jpg",
         "name": "Seattle",
         "attributes": [
@@ -2433,7 +2433,7 @@
     },
     {
         "description": " Seoul is a dynamic, high-tech city that combines traditional Korean culture with cutting-edge innovation, attracting tourists with its rich history, modern architecture, and vibrant food and entertainment scenes.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/seoul",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Seoul.jpg",
         "name": "Seoul",
         "attributes": [
@@ -2477,7 +2477,7 @@
     },
     {
         "description": "Shanghai is a global financial center and lively metropolis renowned for its historic architecture, modern skyscrapers, vibrant cultural scene, and delicious street food.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/shanghai",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Shanghai.jpg",
         "name": "Shanghai",
         "attributes": [
@@ -2537,7 +2537,7 @@
     },
     {
         "description": "Singapore is a small island city-state known for its cleanliness, efficiency, and multiculturalism.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/singapore",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Singapore.jpg",
         "name": "Singapore",
         "attributes": [
@@ -2597,7 +2597,7 @@
     },
     {
         "description": "St. Louis is a city in the Midwestern United States known for its iconic Gateway Arch and its historic role in American expansion.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/st-louis",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/StLouis.jpg",
         "name": "St. Louis",
         "attributes": [
@@ -2649,7 +2649,7 @@
     },
     {
         "description": "Sydney is the largest city in Australia known for its iconic Opera House, beautiful harbor, and stunning beaches.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/sydney",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Sydney.jpg",
         "name": "Sydney",
         "attributes": [
@@ -2697,7 +2697,7 @@
     },
     {
         "description": "Tel Aviv is a vibrant coastal city in Israel known for its beaches, nightlife, and Bauhaus architecture.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/tel-aviv",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/TelAviv.jpg",
         "name": "Tel Aviv",
         "attributes": [
@@ -2753,7 +2753,7 @@
     },
     {
         "description": "Tokyo is a futuristic metropolis in Japan, known for its cutting-edge technology, vibrant street fashion, and rich cultural heritage.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/tokyo",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Tokyo.jpg",
         "name": "Tokyo",
         "attributes": [
@@ -2805,7 +2805,7 @@
     },
     {
         "description": " Toronto is a diverse and dynamic city in Canada, known for its thriving arts and culture scene, iconic landmarks like the CN Tower, and numerous green spaces.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/toronto",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Toronto.jpg",
         "name": "Toronto",
         "attributes": [
@@ -2853,7 +2853,7 @@
     },
     {
         "description": "Vancouver is a beautiful coastal city in Canada, known for its stunning natural scenery, cultural diversity, and thriving arts and culinary scenes.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/vancouver",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Vancouver.jpg",
         "name": "Vancouver",
         "attributes": [
@@ -2893,7 +2893,7 @@
     },
     {
         "description": "Berlin is a vibrant and eclectic city with a rich history and a population of over 3.7 million.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/berlin",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Berlin.jpg",
         "name": "Berlin",
         "attributes": [
@@ -2941,7 +2941,7 @@
     },
     {
         "description": " Washington D.C. is the capital city of the United States, known for its iconic landmarks, historic monuments, and world-class museums.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/washington-dc",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/WashingtonDC.jpg",
         "name": "Washington D.C.",
         "attributes": [
@@ -2985,7 +2985,7 @@
     },
     {
         "description": "Boston is a historic city with a population of over 0.7m, known for its rich American colonial history and prestigious universities.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/boston",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Boston.jpg",
         "name": "Boston",
         "attributes": [
@@ -3045,7 +3045,7 @@
     },
     {
         "description": "Brooklyn is a culturally diverse borough in New York City with a population of over 2.5 million, renowned for its artistic communities and vibrant food scene.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/brooklyn",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/Brooklyn.jpg",
         "name": "Brooklyn",
         "attributes": [
@@ -3093,7 +3093,7 @@
     },
     {
         "description": "Buenos Aires is a bustling and vibrant city with a population of over 2.9 million, renowned for its rich cultural heritage, passionate tango scene, and delicious cuisine.",
-        "external_url": "https://farconic.xyz",
+        "external_url": "https://farconic.xyz/buenos-aires",
         "image": "ipfs://QmbjXPiMdTLVfk2xVPgwaFyULu1KDJnffAekeN7ro5nT6w/BuenosAires.jpg",
         "name": "Buenos Aires",
         "attributes": [

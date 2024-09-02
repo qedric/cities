@@ -1,5 +1,4 @@
 const { ethers } = require("hardhat")
-const { MerkleTree } = require('merkletreejs')
 
 const uint8ArrayToHex = (
   value,
@@ -51,35 +50,35 @@ const getTypedData = async function (
   contractAddress,
   validityStartTimestamp,
   validityEndTimestamp,
-  to,
-  inTokenIds,
-  outTokenId
+  targetAddress,
+  tokenId,
+  qty
 ) {
 
   const uuidBytes = await randomBytes32()
 
   return {
     types: {
-      ClaimRequest: [
-        { name: "to", type: "address" },
-        { name: "inTokenIds", type: "uint256[]" },
-        { name: "outTokenId", type: "uint256" },
+      Request: [
+        { name: "targetAddress", type: "address" },
+        { name: "tokenId", type: "uint256" },
+        { name: "qty", type: "uint256" },
         { name: "validityStartTimestamp", type: "uint128" },
         { name: "validityEndTimestamp", type: "uint128" },
         { name: "uid", type: "bytes32" }
       ],
     },
     domain: {
-      name: 'CitiesSignatureClaim',
+      name: 'CitiesSignedRequest',
       version: "1",
       chainId: (await ethers.provider.getNetwork()).chainId,
       verifyingContract: contractAddress,
     },
-    primaryType: 'ClaimRequest',
+    primaryType: 'Request',
     message: {
-      to: to,
-      inTokenIds: inTokenIds,
-      outTokenId: outTokenId,
+      targetAddress: targetAddress,
+      tokenId: tokenId,
+      qty: qty,
       validityStartTimestamp: validityStartTimestamp,
       validityEndTimestamp: validityEndTimestamp,
       uid: uuidBytes   
@@ -89,7 +88,7 @@ const getTypedData = async function (
 
 module.exports = {
 
-  deployContract: async (admin, royaltyRecipient, royaltyBps, primarySaleRecipient) => {
+  deployContract: async (admin, royaltyRecipient, royaltyBps) => {
 
     /* 
       address _defaultAdmin,
@@ -99,8 +98,8 @@ module.exports = {
       uint128 _royaltyBps,
       address _primarySaleRecipient
     */
-    const Contract = await ethers.getContractFactory("Farconic")
-    const contract = await Contract.deploy(admin.address, 'Farconic', 'CITIES', royaltyRecipient.address, royaltyBps, primarySaleRecipient.address)
+    const Contract = await ethers.getContractFactory("Cities")
+    const contract = await Contract.deploy(admin.address, 'Cities', 'CITIES', royaltyRecipient.address, royaltyBps)
     await contract.waitForDeployment()
 
   /*  console.log('factory address:', factory.target)
@@ -109,7 +108,7 @@ module.exports = {
     return contract
   },
 
-  getMerkleProof: (allowlistedAddresses, addressToProve, limitPerWallet, price) => {
+ /*  getMerkleProof: (allowlistedAddresses, addressToProve, limitPerWallet, price) => {
     const leaves = allowlistedAddresses.map(x => ethers.keccak256(x))
     const merkle = new MerkleTree(leaves, ethers.keccak256, { hashLeaves: true, sortPairs: true })
     const proof = merkle.getHexProof(ethers.keccak256(addressToProve.toString()))
@@ -120,7 +119,7 @@ module.exports = {
       pricePerToken: price,
       currency: ethers.ZeroAddress
     }
-  },
+  }, */
 
   getTypedData: getTypedData,
 
@@ -141,18 +140,18 @@ module.exports = {
     return token;
   },
 
-  generateClaimRequest: async function (contractAddress, signer, to_address, inTokenIds, outTokenId, startTime, endTime) {
+  generateRequest: async function (contractAddress, signer, targetAddress, tokenId, qty, startTime, endTime) {
     // Generate a signature for the claim request
 
     /* 
-    struct ClaimRequest {
-      address to;
-      uint256[] inTokenIds;
-      uint256 outTokenId;
-      uint128 validityStartTimestamp;
-      uint128 validityEndTimestamp;
-      bytes32 uid;
-    }
+      struct Request {
+          address targetAddress;
+          uint256 tokenId;
+          uint256 qty;
+          uint128 validityStartTimestamp;
+          uint128 validityEndTimestamp;
+          bytes32 uid;
+      }
    */
     const validStartTime = startTime || await getCurrentBlockTime()
     const validEndTime = endTime || Math.floor(validStartTime + 60 * 60 * 24)
@@ -160,9 +159,9 @@ module.exports = {
       contractAddress,
       validStartTime,
       validEndTime,
-      to_address,
-      inTokenIds,
-      outTokenId 
+      targetAddress,
+      tokenId,
+      qty
     )
 
     // Sign the typed data

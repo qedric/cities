@@ -5,10 +5,10 @@ pragma solidity ^0.8.0;
 
 /**
  *  The 'signature minting' mechanism used in thirdweb Token smart contracts is a way for a contract admin to authorize an external party's
- *  request to claim tokens on the admin's contract.
+ *  request to mint or burn tokens on the admin's contract.
  *
- *  At a high level, this means you can authorize some external party to claim tokens on your contract, and specify what exactly will be
- *  claimed by that external party.
+ *  At a high level, this means you can authorize some external party to mint or burn tokens on your contract, and specify which tokens will be
+ *  minted or burned by that external party.
  * 
  *  Q - removed superfluous params and added burn request
  */
@@ -50,11 +50,11 @@ interface ICitiesSignedRequest {
     );
 
     /**
-     *  @notice Verifies that a claim request is signed by an account holding
+     *  @notice Verifies that a request is signed by an account holding
      *          MINTER_ROLE (at the time of the function call).
      *
-     *  @param req The payload / claim request.
-     *  @param signature The signature produced by an account signing the claim request.
+     *  @param req The payload / request.
+     *  @param signature The signature produced by an account signing the request.
      *
      *  returns (success, signer) Result of verification and the recovered address.
      */

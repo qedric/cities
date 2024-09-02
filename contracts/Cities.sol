@@ -29,7 +29,6 @@ import "./CitiesSignedRequest.sol";
  *
  *      - EIP 2981 compliance for royalty support on NFT marketplaces.
  *
- *  The `ERC721Drop` contract lets you lazy mint tokens, and distribute those lazy minted tokens via the drop mechanism.
  */
 
 contract Cities is
