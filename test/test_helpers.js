@@ -55,7 +55,8 @@ const getTypedData = async function (
   qty
 ) {
 
-  const uuidBytes = await randomBytes32()
+  //const uuidBytes = await randomBytes32()
+  const uuidBytes = ethers.encodeBytes32String('')
 
   return {
     types: {
@@ -171,8 +172,11 @@ module.exports = {
       typedData.message
     )
 
-    //console.log('\tverified signer:', recoverSignerAddress(signature, typedData))
-    //console.log(`\t${signer.address}`)
+    console.log('verified signer address:', recoverSignerAddress(signature, typedData))
+    console.log(`actual signer address:`, signer.address)
+    console.log(`typed data domain:`, typedData.domain)
+    console.log(`typed data types:`, typedData.types)
+    console.log(`typed data message:`, typedData.message)
 
     return { signature, typedData }
   }
