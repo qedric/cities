@@ -22,15 +22,14 @@ interface ICitiesSignedRequest {
      *  @param qty The qty of the token to mint/burn.
      *  @param validityStartTimestamp The unix timestamp after which the payload is valid.
      *  @param validityEndTimestamp The unix timestamp at which the payload expires.
-     *  @param uid A unique identifier for the payload.
+     *  @param tokenURI the uri of the token metadata.
      */
     struct Request {
         address targetAddress;
-        uint256 tokenId;
         uint256 qty;
         uint128 validityStartTimestamp;
         uint128 validityEndTimestamp;
-        bytes32 uid;
+        string tokenURI;
     }
 
     /// @dev Emitted when tokens are minted.
@@ -82,6 +81,7 @@ interface ICitiesSignedRequest {
      */
     function burnWithSignature(
         Request calldata req,
+        uint256 tokenId,
         bytes calldata signature
     ) external returns (address signer);
 }

@@ -51,7 +51,7 @@ const getTypedData = async function (
   validityStartTimestamp,
   validityEndTimestamp,
   targetAddress,
-  tokenId,
+  tokenURI,
   qty
 ) {
 
@@ -62,11 +62,10 @@ const getTypedData = async function (
     types: {
       Request: [
         { name: "targetAddress", type: "address" },
-        { name: "tokenId", type: "uint256" },
         { name: "qty", type: "uint256" },
         { name: "validityStartTimestamp", type: "uint128" },
         { name: "validityEndTimestamp", type: "uint128" },
-        { name: "uid", type: "bytes32" }
+        { name: "tokenURI", type: "string" }
       ],
     },
     domain: {
@@ -78,11 +77,10 @@ const getTypedData = async function (
     primaryType: 'Request',
     message: {
       targetAddress: targetAddress,
-      tokenId: tokenId,
       qty: qty,
       validityStartTimestamp: validityStartTimestamp,
       validityEndTimestamp: validityEndTimestamp,
-      uid: uuidBytes   
+      tokenURI: tokenURI   
     },
   }
 }
@@ -141,17 +139,16 @@ module.exports = {
     return token;
   },
 
-  generateRequest: async function (contractAddress, signer, targetAddress, tokenId, qty, startTime, endTime) {
+  generateRequest: async function (contractAddress, signer, targetAddress, qty, tokenURI, startTime, endTime) {
     // Generate a signature for the claim request
 
     /* 
       struct Request {
           address targetAddress;
-          uint256 tokenId;
           uint256 qty;
           uint128 validityStartTimestamp;
           uint128 validityEndTimestamp;
-          bytes32 uid;
+          string tokenUI;
       }
    */
     const validStartTime = startTime || await getCurrentBlockTime()
@@ -161,7 +158,7 @@ module.exports = {
       validStartTime,
       validEndTime,
       targetAddress,
-      tokenId,
+      tokenURI,
       qty
     )
 
@@ -172,11 +169,11 @@ module.exports = {
       typedData.message
     )
 
-    console.log('verified signer address:', recoverSignerAddress(signature, typedData))
+    /* console.log('verified signer address:', recoverSignerAddress(signature, typedData))
     console.log(`actual signer address:`, signer.address)
     console.log(`typed data domain:`, typedData.domain)
     console.log(`typed data types:`, typedData.types)
-    console.log(`typed data message:`, typedData.message)
+    console.log(`typed data message:`, typedData.message) */
 
     return { signature, typedData }
   }

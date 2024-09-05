@@ -1,5 +1,8 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat")
+//const cities = require("../data/cities.json")
+
+//console.log(cities.length)
 
 const { deployContract, getCurrentBlockTime, generateRequest } = require("./test_helpers.js")
 
@@ -33,7 +36,7 @@ describe(" -- Testing Farconic CITIES -- ", function () {
         beforeEach(async function () {
             contract = await deployContract(INITIAL_DEFAULT_ADMIN_AND_SIGNER, royaltyRecipient, 10_000)
             //console.log('\tlazy minting 60 city tokens...')
-            await contract.lazyMint(60, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, ethers.toUtf8Bytes("Cities"))
+            //await contract.lazyMint(60, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, ethers.toUtf8Bytes("Cities"))
         })
 
         it("should allow a user to mint tokens with signature", async function () {
@@ -41,11 +44,10 @@ describe(" -- Testing Farconic CITIES -- ", function () {
             /*
                 struct Request {
                     address targetAddress;
-                    uint256 tokenId;
                     uint256 qty;
                     uint128 validityStartTimestamp;
                     uint128 validityEndTimestamp;
-                    bytes32 uid;
+                    string tokenURI;
                 } 
             */
 
@@ -54,7 +56,7 @@ describe(" -- Testing Farconic CITIES -- ", function () {
             // check that our admin has the MINTER_ROLE
             expect(await contract.hasRole(await contract.MINTER_ROLE(), INITIAL_DEFAULT_ADMIN_AND_SIGNER.address)).to.equal(true)
 
-            const cr = await generateRequest(contract.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER, user1.address, 0, 300)
+            const cr = await generateRequest(contract.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER, user1.address, 300, "ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/")
             //console.log(cr)
 
             // check that the signature checks out by calling verify 
@@ -76,7 +78,7 @@ describe(" -- Testing Farconic CITIES -- ", function () {
             expect(await contract.hasRole(await contract.MINTER_ROLE(), user2.address)).to.equal(false)
 
             // generate claim request with unauthorised signer
-            const cr = await generateRequest(contract.target, user2, user1.address, 0, 300)
+            const cr = await generateRequest(contract.target, user2, user1.address, 300, "ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/")
             //console.log(cr)
 
             // check that the signature fails verify 
@@ -99,7 +101,7 @@ describe(" -- Testing Farconic CITIES -- ", function () {
             // set a start time 12 hours from now
             const inValidStartTime = Math.floor((await getCurrentBlockTime()) + 60 * 60 * 12)
 
-            const cr = await generateRequest(contract.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER, user1.address, 0, 300, inValidStartTime)
+            const cr = await generateRequest(contract.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER, user1.address, 300, "ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/", inValidStartTime)
             //console.log(cr)
 
             await expect(contract.connect(user1).mintWithSignature(
@@ -117,7 +119,7 @@ describe(" -- Testing Farconic CITIES -- ", function () {
             const validSartTime = Math.floor((await getCurrentBlockTime()) - 60 * 60 * 24)
             const inValidEndTime = Math.floor((await getCurrentBlockTime()) - 60 * 60 * 12)
 
-            const cr = await generateRequest(contract.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER, user1.address, 0, 300, validSartTime, inValidEndTime)
+            const cr = await generateRequest(contract.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER, user1.address, 300, "ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/",validSartTime, inValidEndTime)
             //console.log(cr)
 
             await expect(contract.connect(user1).mintWithSignature(
@@ -140,10 +142,10 @@ describe(" -- Testing Farconic CITIES -- ", function () {
         beforeEach(async function () {
             contract = await deployContract(INITIAL_DEFAULT_ADMIN_AND_SIGNER, royaltyRecipient, 10_000, primarySaleRecipient)
             //console.log('\tlazy minting 60 city tokens...')
-            await contract.lazyMint(60, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, ethers.toUtf8Bytes("Cities"))
+            //await contract.lazyMint(60, `ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/`, ethers.toUtf8Bytes("Cities"))
 
             // generate a mint request and mint a token
-            cr = await generateRequest(contract.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER, targetAddress.address, 0, 300)
+            cr = await generateRequest(contract.target, INITIAL_DEFAULT_ADMIN_AND_SIGNER, targetAddress.address, 300, "ipfs://QmRczWjARcZHB9pJ3aK7F3YdJfYf8UjPXW3FWLWychhdnZ/")
             // check that the signature checks out by calling verify - using the same request that was used to mint
             const recovered = await contract.verify(cr.typedData.message, cr.signature)
             expect(recovered[0]).to.equal(true)
@@ -157,7 +159,7 @@ describe(" -- Testing Farconic CITIES -- ", function () {
         it("should allow a user to burn tokens with signature", async function () {
 
             // burn tokens using same request used to mint
-            const tx = await contract.connect(targetAddress).burnWithSignature(cr.typedData.message, cr.signature)
+            const tx = await contract.connect(targetAddress).burnWithSignature(cr.typedData.message, 0, cr.signature)
 
             // check that the tokens are no longer in recipient address
             expect(await contract.balanceOf(targetAddress.address, 0)).to.equal(0)
@@ -167,7 +169,7 @@ describe(" -- Testing Farconic CITIES -- ", function () {
 
             // burn tokens using same request used to mint
             await expect(contract.connect(user2).burnWithSignature(
-                cr.typedData.message, cr.signature)).to.be.revertedWith('INSUFFICIENT_BAL')
+                cr.typedData.message, 0, cr.signature)).to.be.revertedWith('INSUFFICIENT_BAL')
 
             // check that the tokens are still in recipient address
             expect(await contract.balanceOf(targetAddress.address, 0)).to.equal(300)

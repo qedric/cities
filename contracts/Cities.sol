@@ -4,10 +4,9 @@ pragma solidity ^0.8.0;
 /// @author thirdweb, modified by Q - https://warpcast.com/berlin
 
 import { ERC1155 } from "@thirdweb-dev/contracts/eip/ERC1155.sol";
+import "@thirdweb-dev/contracts/eip/interface/IERC1155Enumerable.sol";
 import "@thirdweb-dev/contracts/extension/ContractMetadata.sol";
 import "@thirdweb-dev/contracts/extension/Royalty.sol";
-import "@thirdweb-dev/contracts/extension/BatchMintMetadata.sol";
-import "@thirdweb-dev/contracts/extension/LazyMint.sol";
 import "@thirdweb-dev/contracts/extension/PermissionsEnumerable.sol";
 import "@thirdweb-dev/contracts/extension/Multicall.sol";
 import "@thirdweb-dev/contracts/lib/Strings.sol";
@@ -22,9 +21,6 @@ import "./CitiesSignedRequest.sol";
  *      - Contract metadata for royalty support on platforms such as OpenSea that use
  *        off-chain information to distribute roaylties.
  *
- *      - Ownership of the contract, with the ability to restrict certain functions to
- *        only be called by the contract's owner.
- *
  *      - Multicall capability to perform multiple actions atomically
  *
  *      - EIP 2981 compliance for royalty support on NFT marketplaces.
@@ -33,10 +29,9 @@ import "./CitiesSignedRequest.sol";
 
 contract Cities is
     ERC1155,
+    IERC1155Enumerable,
     ContractMetadata,
     Royalty,
-    BatchMintMetadata,
-    LazyMint,
     PermissionsEnumerable,
     CitiesSignedRequest,
     Multicall
@@ -51,6 +46,9 @@ contract Cities is
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     /// @dev Only METADATA_ROLE holders can reveal the URI for a batch of delayed reveal NFTs, and update or freeze batch metadata.
     bytes32 public constant METADATA_ROLE = keccak256("METADATA_ROLE");
+
+    /// @dev The tokenId of the next NFT to mint.
+    uint256 internal nextTokenIdToMint_;
 
     /*//////////////////////////////////////////////////////////////
                             Mappings
@@ -90,29 +88,6 @@ contract Cities is
         _setupRole(METADATA_ROLE, _defaultAdmin);
     }
 
-     /*///////////////////////////////////////////////////////////////
-                        Setter functions
-    //////////////////////////////////////////////////////////////*/
-
-    /**
-     * @notice Updates the base URI for a batch of tokens.
-     *
-     * @param _index Index of the desired batch in batchIds array.
-     * @param _uri   the new base URI for the batch.
-     */
-    function updateBatchBaseURI(uint256 _index, string calldata _uri) external onlyRole(METADATA_ROLE) {
-        _setBaseURI(getBatchIdAtIndex(_index), _uri);
-    }
-
-    /**
-     * @notice Freezes the base URI for a batch of tokens.
-     *
-     * @param _index Index of the desired batch in batchIds array.
-     */
-    function freezeBatchBaseURI(uint256 _index) external onlyRole(METADATA_ROLE) {
-        _freezeBaseURI(getBatchIdAtIndex(_index));
-    }
-
     /*//////////////////////////////////////////////////////////////
                             ERC165 Logic
     //////////////////////////////////////////////////////////////*/
@@ -141,12 +116,12 @@ contract Cities is
      * @return         The metadata URI for the given NFT.
      */
     function uri(uint256 _tokenId) public view virtual override returns (string memory) {
-        return string(abi.encodePacked(_getBaseURI(_tokenId), _tokenId.toString()));
+        return _uri[_tokenId];
     }
 
     /// @notice The tokenId assigned to the next new NFT to be lazy minted.
     function nextTokenIdToMint() public view virtual returns (uint256) {
-        return nextTokenIdToLazyMint;
+        return nextTokenIdToMint_;
     }
 
     /*///////////////////////////////////////////////////////////////
@@ -162,11 +137,10 @@ contract Cities is
      * 
      * struct StakeRequest {
         address to;
-        uint256 tokenId;
         uint256 qty;
         uint128 validityStartTimestamp;
         uint128 validityEndTimestamp;
-        bytes32 uid;
+        string tokenURI;
     }
      * 
      */
@@ -178,12 +152,18 @@ contract Cities is
         // verify and process payload.
         signer = _processRequest(_req, _signature);
  
-        // mint token only if the token id is valid
-        if (_req.tokenId <= nextTokenIdToMint()) {
-            _mint(_req.targetAddress, _req.tokenId, _req.qty, "");
-        }
+        // get the tokenId to mint
+        uint256 tokenIdToMint = nextTokenIdToMint_;
+        nextTokenIdToMint_ += 1;
 
-        emit TokensMintedWithSignature(signer, _req.targetAddress, _req.tokenId, _req.qty);
+        // set the tokenURI
+        _setTokenURI(tokenIdToMint, _req.tokenURI);
+
+        // mint the token
+        _mint(_req.targetAddress, tokenIdToMint, _req.qty, "");
+
+        // emit the event
+        emit TokensMintedWithSignature(signer, _req.targetAddress, tokenIdToMint, _req.qty);
     }
 
 
@@ -191,19 +171,21 @@ contract Cities is
      *  @notice Burns a given qty of the requestor's balance the requested tokenId
      *  @dev    Only an account holding MINTER_ROLE can sign claim requests.
      *
-     *  @param _req The payload / stake request.
-     *  @param _signature The signature produced by an account signing the request.
+     *  @param req The payload / stake request.
+     *  @param tokenId The tokenId to burn.
+     *  @param signature The signature produced by an account signing the request.
      * 
      */
     function burnWithSignature(
-        Request calldata _req,
-        bytes calldata _signature
+        Request calldata req,
+        uint256 tokenId,
+        bytes calldata signature
     ) external override returns (address signer) {
 
         // verify and process payload.
-        signer = _processRequest(_req, _signature);
+        signer = _processRequest(req, signature);
 
-        _burn(msg.sender, _req.tokenId, _req.qty);
+        _burn(msg.sender, tokenId, req.qty);
     }
 
     /*///////////////////////////////////////////////////////////////
@@ -251,11 +233,6 @@ contract Cities is
     /// @dev Checks whether contract metadata can be set in the given execution context.
     function _canSetContractURI() internal view override returns (bool) {
         return hasRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    }
-
-    /// @dev Returns whether lazy minting can be done in the given execution context.
-    function _canLazyMint() internal view virtual override returns (bool) {
-        return hasRole(MINTER_ROLE, msg.sender);
     }
 
     /// @dev Returns whether a given address is authorized to sign claim requests.

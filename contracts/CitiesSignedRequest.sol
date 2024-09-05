@@ -11,7 +11,7 @@ abstract contract CitiesSignedRequest is EIP712, ICitiesSignedRequest {
 
     bytes32 internal constant TYPEHASH =
         keccak256(
-            "Request(address targetAddress,uint256 tokenId,uint256 qty,uint128 validityStartTimestamp,uint128 validityEndTimestamp,bytes32 uid)"
+            "Request(address targetAddress,uint256 qty,uint128 validityStartTimestamp,uint128 validityEndTimestamp,string tokenURI)"
         );
 
     constructor() EIP712("CitiesSignedRequest", "1") {}
@@ -47,11 +47,10 @@ abstract contract CitiesSignedRequest is EIP712, ICitiesSignedRequest {
             abi.encode(
                 TYPEHASH,
                 _req.targetAddress,
-                _req.tokenId,
                 _req.qty,
                 _req.validityStartTimestamp,
                 _req.validityEndTimestamp,
-                _req.uid
+                keccak256(bytes(_req.tokenURI))
             );
     }
 }
