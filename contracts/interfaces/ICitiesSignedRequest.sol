@@ -17,35 +17,35 @@ interface ICitiesSignedRequest {
     /**
      *  @notice The body of a request to mint or burn tokens.
      *
-     *  @param targetAddress The receiver/holder of the tokens.
+     *  @param targetAddresses The receivers/holders of the tokens.
+     *  @param amounts The qty of the token to mint/burn for each recipient/holder.
      *  @param tokenId The token id to mint/burn.
-     *  @param qty The qty of the token to mint/burn.
+     *  @param tokenURI the uri of the token metadata.
      *  @param validityStartTimestamp The unix timestamp after which the payload is valid.
      *  @param validityEndTimestamp The unix timestamp at which the payload expires.
-     *  @param tokenURI the uri of the token metadata.
      */
     struct Request {
-        address targetAddress;
-        uint256 qty;
+        address[] targetAddresses;
+        uint256[] amounts;
+        uint256 tokenId;
+        string tokenURI;
         uint128 validityStartTimestamp;
         uint128 validityEndTimestamp;
-        string tokenURI;
     }
 
     /// @dev Emitted when tokens are minted.
     event TokensMintedWithSignature(
         address indexed signer,
-        address indexed recipient,
-        uint256 tokenId,
-        uint256 qty
+        address[] indexed recipients,
+        uint256 indexed tokenId
     );
 
     /// @dev Emitted when tokens are burned.
     event TokensBurnedWithSignature(
         address indexed signer,
-        address indexed holder,
-        uint256 tokenId,
-        uint256 qty
+        uint256 indexed tokenId,
+        address[] indexed holders,
+        uint256[] amounts
     );
 
     /**
@@ -81,7 +81,6 @@ interface ICitiesSignedRequest {
      */
     function burnWithSignature(
         Request calldata req,
-        uint256 tokenId,
         bytes calldata signature
     ) external returns (address signer);
 }

@@ -11,7 +11,7 @@ abstract contract CitiesSignedRequest is EIP712, ICitiesSignedRequest {
 
     bytes32 internal constant TYPEHASH =
         keccak256(
-            "Request(address targetAddress,uint256 qty,uint128 validityStartTimestamp,uint128 validityEndTimestamp,string tokenURI)"
+            "Request(address[] targetAddresses,uint256[] amounts,uint256 tokenId,string tokenURI,uint128 validityStartTimestamp,uint128 validityEndTimestamp)"
         );
 
     constructor() EIP712("CitiesSignedRequest", "1") {}
@@ -21,7 +21,8 @@ abstract contract CitiesSignedRequest is EIP712, ICitiesSignedRequest {
         Request calldata _req,
         bytes calldata _signature
     ) public view override returns (bool success, address signer) {
-        signer = _hashTypedDataV4(keccak256(_encodeRequest(_req))).recover(_signature);
+        bytes32 digest = _hashTypedDataV4(keccak256(_encodeRequest(_req)));
+        signer = digest.recover(_signature);
         success = _canSignRequest(signer);
     }
 
@@ -38,7 +39,7 @@ abstract contract CitiesSignedRequest is EIP712, ICitiesSignedRequest {
             _req.validityStartTimestamp <= block.timestamp && block.timestamp <= _req.validityEndTimestamp,
             "Request expired"
         );
-        require(_req.targetAddress != address(0), "recipient undefined");
+        require(_req.targetAddresses.length > 0, "recipient undefined");
     }
 
     /// @dev Resolves 'stack too deep' error in `recoverAddress`.
@@ -46,11 +47,12 @@ abstract contract CitiesSignedRequest is EIP712, ICitiesSignedRequest {
         return
             abi.encode(
                 TYPEHASH,
-                _req.targetAddress,
-                _req.qty,
+                keccak256(abi.encodePacked(_req.targetAddresses)),
+                keccak256(abi.encodePacked(_req.amounts)),
+                _req.tokenId,
+                keccak256(bytes(_req.tokenURI)),
                 _req.validityStartTimestamp,
-                _req.validityEndTimestamp,
-                keccak256(bytes(_req.tokenURI))
+                _req.validityEndTimestamp
             );
     }
 }

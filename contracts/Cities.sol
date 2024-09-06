@@ -129,19 +129,11 @@ contract Cities is
     //////////////////////////////////////////////////////////////*/
 
     /**
-     *  @notice mints a given quantity of the requested tokenId to the recipient.
+     *  @notice mints 1 token to each of the recipients in the request.
      *  @dev    Only an account holding MINTER_ROLE can sign claim requests.
      *
      *  @param _req The payload / mint request.
      *  @param _signature The signature produced by an account signing the request.
-     * 
-     * struct StakeRequest {
-        address to;
-        uint256 qty;
-        uint128 validityStartTimestamp;
-        uint128 validityEndTimestamp;
-        string tokenURI;
-    }
      * 
      */
     function mintWithSignature(
@@ -159,11 +151,13 @@ contract Cities is
         // set the tokenURI
         _setTokenURI(tokenIdToMint, _req.tokenURI);
 
-        // mint the token
-        _mint(_req.targetAddress, tokenIdToMint, _req.qty, "");
+        // mint one token to each address in the targetAddresses array
+        for (uint256 i = 0; i < _req.targetAddresses.length; i++) {
+            _mint(_req.targetAddresses[i], tokenIdToMint, 1, "");
+        }
 
         // emit the event
-        emit TokensMintedWithSignature(signer, _req.targetAddress, tokenIdToMint, _req.qty);
+        emit TokensMintedWithSignature(signer, _req.targetAddresses, tokenIdToMint);
     }
 
 
@@ -172,20 +166,30 @@ contract Cities is
      *  @dev    Only an account holding MINTER_ROLE can sign claim requests.
      *
      *  @param req The payload / stake request.
-     *  @param tokenId The tokenId to burn.
      *  @param signature The signature produced by an account signing the request.
      * 
      */
     function burnWithSignature(
         Request calldata req,
-        uint256 tokenId,
         bytes calldata signature
     ) external override returns (address signer) {
+
+        // revert if the arrays are not the same length
+        if (req.targetAddresses.length != req.amounts.length) {
+            revert("Length mismatch");
+        }
 
         // verify and process payload.
         signer = _processRequest(req, signature);
 
-        _burn(msg.sender, tokenId, req.qty);
+        // burn the tokens
+        for (uint256 i = 0; i < req.targetAddresses.length; i++) {
+            _burn(req.targetAddresses[i], req.tokenId, req.amounts[i]);
+        }
+
+        // emit the event
+        emit TokensBurnedWithSignature(signer, req.tokenId, req.targetAddresses, req.amounts);
+
     }
 
     /*///////////////////////////////////////////////////////////////

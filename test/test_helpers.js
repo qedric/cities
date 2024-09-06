@@ -50,22 +50,33 @@ const getTypedData = async function (
   contractAddress,
   validityStartTimestamp,
   validityEndTimestamp,
-  targetAddress,
-  tokenURI,
-  qty
+  targetAddresses,
+  amounts,
+  tokenId,
+  tokenURI
 ) {
 
   //const uuidBytes = await randomBytes32()
-  const uuidBytes = ethers.encodeBytes32String('')
+  //const uuidBytes = ethers.encodeBytes32String('')
+
+  /* 
+    address[] targetAddresses;
+    uint256[] amounts;
+    uint256 tokenId;
+    uint128 validityStartTimestamp;
+    uint128 validityEndTimestamp;
+    string tokenURI; 
+  */
 
   return {
     types: {
       Request: [
-        { name: "targetAddress", type: "address" },
-        { name: "qty", type: "uint256" },
+        { name: "targetAddresses", type: "address[]" },
+        { name: "amounts", type: "uint256[]" },
+        { name: "tokenId", type: "uint256" },
+        { name: "tokenURI", type: "string" },
         { name: "validityStartTimestamp", type: "uint128" },
         { name: "validityEndTimestamp", type: "uint128" },
-        { name: "tokenURI", type: "string" }
       ],
     },
     domain: {
@@ -76,11 +87,12 @@ const getTypedData = async function (
     },
     primaryType: 'Request',
     message: {
-      targetAddress: targetAddress,
-      qty: qty,
+      targetAddresses: targetAddresses,
+      amounts: amounts,
+      tokenId: tokenId,
+      tokenURI: tokenURI,
       validityStartTimestamp: validityStartTimestamp,
-      validityEndTimestamp: validityEndTimestamp,
-      tokenURI: tokenURI   
+      validityEndTimestamp: validityEndTimestamp 
     },
   }
 }
@@ -139,16 +151,17 @@ module.exports = {
     return token;
   },
 
-  generateRequest: async function (contractAddress, signer, targetAddress, qty, tokenURI, startTime, endTime) {
+  generateRequest: async function (contractAddress, signer, tokenURI, targetAddresses, amounts, startTime, endTime) {
     // Generate a signature for the claim request
 
     /* 
       struct Request {
-          address targetAddress;
-          uint256 qty;
+          address[] targetAddresses;
+          uint256[] amounts;
+          uint256 tokenId;
+          string tokenURI;
           uint128 validityStartTimestamp;
           uint128 validityEndTimestamp;
-          string tokenUI;
       }
    */
     const validStartTime = startTime || await getCurrentBlockTime()
@@ -157,9 +170,10 @@ module.exports = {
       contractAddress,
       validStartTime,
       validEndTime,
-      targetAddress,
+      targetAddresses,
+      amounts,
+      0,
       tokenURI,
-      qty
     )
 
     // Sign the typed data
