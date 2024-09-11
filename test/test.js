@@ -359,7 +359,7 @@ describe(" -- Testing Farconic VAULT -- ", function () {
         await vault.waitForDeployment()
 
         // Add the mock token to the allowed tokens list
-        await vault.connect(owner).addAllowedToken(mockERC1155.target)
+        await vault.connect(owner).addAllowedTokens([mockERC1155.target])
     })
 
     describe("Stake Tokens", function () {
@@ -375,14 +375,13 @@ describe(" -- Testing Farconic VAULT -- ", function () {
                 [0], // tokenIds
                 [50], // amounts
                 addr1.address, // staker
-                90, // stakeDays
-                1 // stakeId
+                90 // stakeDays
             )
 
             //const stakeInfo = await vault.userStakes(addr1.address, 0)
-            const tokenAddresses = await vault.getTokenAddresses(addr1.address, 0)
-            const tokenIds = await vault.getTokenIds(addr1.address, 0)
-            const amounts = await vault.getAmounts(addr1.address, 0)
+            const tokenAddresses = await vault.getStakedTokenAddresses(addr1.address, 0)
+            const tokenIds = await vault.getStakedTokenIds(addr1.address, 0)
+            const amounts = await vault.getStakedAmounts(addr1.address, 0)
 
             /* console.log("stakeInfo:", stakeInfo)
             console.log("tokenAddresses:", tokenAddresses)
@@ -402,19 +401,19 @@ describe(" -- Testing Farconic VAULT -- ", function () {
 
         it("should fail if no tokens are provided", async function () {
             await expect(
-                vault.connect(addr1).stake([], [], [], addr1.address, 90, 1)
+                vault.connect(addr1).stake([], [], [], addr1.address, 90)
             ).to.be.revertedWithCustomError(vault, "NoTokensToStake")
         })
 
         it("should fail if array lengths mismatch", async function () {
             await expect(
-                vault.connect(addr1).stake([mockERC1155.target], [], [], addr1.address, 90, 1)
+                vault.connect(addr1).stake([mockERC1155.target], [], [], addr1.address, 90)
             ).to.be.revertedWithCustomError(vault, "ArrayLengthMismatch")
         })
 
         it("should fail if minimum stake period is not met", async function () {
             await expect(
-                vault.connect(addr1).stake([mockERC1155.target], [0], [50], addr1.address, 89, 1)
+                vault.connect(addr1).stake([mockERC1155.target], [0], [50], addr1.address, 89)
             ).to.be.revertedWithCustomError(vault, "MinimumStakePeriodNotMet")
         })
 
@@ -423,14 +422,60 @@ describe(" -- Testing Farconic VAULT -- ", function () {
             await mockToken2.mint(addr1.address, 0, 100, "0x")
 
             await expect(
-                vault.connect(addr1).stake([mockToken2.target], [0], [50], addr1.address, 90, 1)
+                vault.connect(addr1).stake([mockToken2.target], [0], [50], addr1.address, 90)
             ).to.be.revertedWithCustomError(vault, "TokenNotAllowed")
         })
 
         it("should fail if not allowed to stake", async function () {
             await expect(
-                vault.connect(addr2).stake([mockERC1155.target], [0], [50], addr1.address, 90, 1)
+                vault.connect(addr2).stake([mockERC1155.target], [0], [50], addr1.address, 90)
             ).to.be.revertedWithCustomError(vault, "NotAuthorised")
+        })
+
+        it("should allow batch staking of multiple tokens", async function () {
+
+            // create several mock tokens
+            const mockToken2 = await deployMockToken("MockERC1155", "MCK")
+            const mockToken3 = await deployMockToken("MockERC1155", "MCK")
+
+            // mint tokens to owner
+            await mockERC1155.mint(owner.address, 0, 100, "0x")
+            await mockToken2.mint(owner.address, 0, 100, "0x")
+            await mockToken3.mint(owner.address, 0, 100, "0x")
+            await mockERC1155.mint(owner.address, 10, 100, "0x")
+            await mockToken2.mint(owner.address, 10, 100, "0x")
+            await mockToken3.mint(owner.address, 10, 100, "0x")
+
+            // approve vault for all tokens
+            await mockERC1155.connect(owner).setApprovalForAll(vault.target, true)
+            await mockToken2.connect(owner).setApprovalForAll(vault.target, true)
+            await mockToken3.connect(owner).setApprovalForAll(vault.target, true)
+
+            // approve the tokens to be staked
+            await vault.connect(owner).addAllowedTokens([mockERC1155.target, mockToken2.target, mockToken3.target])
+
+            expect(await mockERC1155.isApprovedForAll(owner.address, vault.target)).to.equal(true)
+            expect(await mockToken2.isApprovedForAll(owner.address, vault.target)).to.equal(true)
+            expect(await mockToken3.isApprovedForAll(owner.address, vault.target)).to.equal(true)
+
+            // now we should be able to stake all of them
+            await vault.connect(owner).stake(
+                [mockERC1155.target, mockToken2.target, mockToken3.target, mockERC1155.target, mockToken2.target, mockToken3.target],
+                [0, 0, 0, 10, 10, 10],
+                [100, 100, 100, 100, 100, 100],
+                owner.address,
+                90
+            )
+
+            // check that the tokens are staked
+            expect(await mockERC1155.balanceOf(vault.target, 0)).to.equal(100)
+            expect(await mockToken2.balanceOf(vault.target, 0)).to.equal(100)
+            expect(await mockToken3.balanceOf(vault.target, 0)).to.equal(100)
+            expect(await mockERC1155.balanceOf(vault.target, 10)).to.equal(100)
+            expect(await mockToken2.balanceOf(vault.target, 10)).to.equal(100)
+            expect(await mockToken3.balanceOf(vault.target, 10)).to.equal(100)
+
+
         })
     })
 
@@ -457,13 +502,12 @@ describe(" -- Testing Farconic VAULT -- ", function () {
                 [0], // uint256[] memory tokenIds
                 [50], // uint256[] memory amounts,
                 addr1.address, // address staker,
-                90, // uint256 daysToLock,
-                1 // uint256 id 
+                90 // uint256 daysToLock,
             )
 
-            const tokenAddresses = await vault.getTokenAddresses(addr1.address, 0)
-            const tokenIds = await vault.getTokenIds(addr1.address, 0)
-            const amounts = await vault.getAmounts(addr1.address, 0)
+            const tokenAddresses = await vault.getStakedTokenAddresses(addr1.address, 0)
+            const tokenIds = await vault.getStakedTokenIds(addr1.address, 0)
+            const amounts = await vault.getStakedAmounts(addr1.address, 0)
 
             expect(tokenAddresses[0]).to.equal(mockERC1155.target)
             expect(tokenIds[0]).to.equal(0)
@@ -475,19 +519,19 @@ describe(" -- Testing Farconic VAULT -- ", function () {
 
         it("should fail if no tokens are provided", async function () {
             await expect(
-                vault.connect(addr1).retroactiveStake([], [], [], addr1.address, 90, 1)
+                vault.connect(addr1).retroactiveStake([], [], [], addr1.address, 90)
             ).to.be.revertedWithCustomError(vault, "NoTokensToStake")
         })
 
         it("should fail if array lengths mismatch", async function () {
             await expect(
-                vault.connect(addr1).retroactiveStake([mockERC1155.target], [], [], addr1.address, 90, 1)
+                vault.connect(addr1).retroactiveStake([mockERC1155.target], [], [], addr1.address, 90)
             ).to.be.revertedWithCustomError(vault, "ArrayLengthMismatch")
         })
 
         it("should fail if minimum stake period is not met", async function () {
             await expect(
-                vault.connect(addr1).retroactiveStake([mockERC1155.target], [0], [50], addr1.address, 89, 1)
+                vault.connect(addr1).retroactiveStake([mockERC1155.target], [0], [50], addr1.address, 89)
             ).to.be.revertedWithCustomError(vault, "MinimumStakePeriodNotMet")
         })
 
@@ -499,7 +543,7 @@ describe(" -- Testing Farconic VAULT -- ", function () {
             await mockERC1155.connect(addr1).safeTransferFrom(addr1.address, vault.target, 0, 50, "0x")
 
             await expect(
-                vault.connect(addr1).retroactiveStake([mockERC1155.target], [0], [150], addr1.address, 90, 1)
+                vault.connect(addr1).retroactiveStake([mockERC1155.target], [0], [150], addr1.address, 90)
             ).to.be.revertedWithCustomError(vault, "InsufficientBalance")
         })
 
@@ -516,8 +560,7 @@ describe(" -- Testing Farconic VAULT -- ", function () {
                 [0], // tokenIds
                 [60], // amounts
                 addr1.address, // staker
-                90, // stakeDays
-                1 // stakeId
+                90 // stakeDays
             )
 
             // Verify that the staked balance is correct
@@ -554,6 +597,143 @@ describe(" -- Testing Farconic VAULT -- ", function () {
             userBalance = await mockERC1155.balanceOf(addr1.address, 0)
             expect(userBalance).to.equal(60)
         })
+
+        it("should allow batch retro-staking of multiple tokens", async function () {
+
+            // create several mock tokens
+            const mockToken2 = await deployMockToken("MockERC1155", "MCK")
+            const mockToken3 = await deployMockToken("MockERC1155", "MCK")
+
+            // mint tokens to owner
+            await mockERC1155.mint(owner.address, 0, 100, "0x")
+            await mockToken2.mint(owner.address, 0, 100, "0x")
+            await mockToken3.mint(owner.address, 0, 100, "0x")
+            await mockERC1155.mint(owner.address, 10, 100, "0x")
+            await mockToken2.mint(owner.address, 10, 100, "0x")
+            await mockToken3.mint(owner.address, 10, 100, "0x")
+
+            // approve vault for all tokens
+            await mockERC1155.connect(owner).setApprovalForAll(vault.target, true)
+            await mockToken2.connect(owner).setApprovalForAll(vault.target, true)
+            await mockToken3.connect(owner).setApprovalForAll(vault.target, true)
+
+            // approve the tokens to be staked
+            await vault.connect(owner).addAllowedTokens([mockERC1155.target, mockToken2.target, mockToken3.target])
+
+            expect(await mockERC1155.isApprovedForAll(owner.address, vault.target)).to.equal(true)
+            expect(await mockToken2.isApprovedForAll(owner.address, vault.target)).to.equal(true)
+            expect(await mockToken3.isApprovedForAll(owner.address, vault.target)).to.equal(true)
+
+            // stake some of the tokens directly
+            await vault.connect(owner).stake(
+                [mockERC1155.target, mockToken2.target, mockToken3.target, mockERC1155.target, mockToken2.target, mockToken3.target],
+                [0, 0, 0, 10, 10, 10],
+                [60, 60, 60, 60, 60, 60],
+                owner.address,
+                90
+            )
+
+            // check that the tokens are staked by checking stakeInfo
+            let stakeInfo = await vault.userStakes(owner.address, 0)
+            console.log("stakeInfo:", stakeInfo)
+            expect(stakeInfo.length).to.equal(2)
+
+            const tokenAddresses = await vault.getStakedTokenAddresses(owner.address, 0)
+            const tokenIds = await vault.getStakedTokenIds(owner.address, 0)
+            const amounts = await vault.getStakedAmounts(owner.address, 0)
+
+            /* 
+                console.log("stakeInfo:", stakeInfo)
+                console.log("tokenAddresses:", tokenAddresses)
+                console.log("tokenIds:", tokenIds)
+                console.log("amounts:", amounts)
+                console.log("stakeTimestamp:", stakeInfo.stakeTimestamp.toString())
+                console.log("lockPeriod:", stakeInfo.lockPeriod.toString())
+             */
+
+            expect(tokenAddresses[0]).to.equal(mockERC1155.target)
+            expect(tokenIds[0]).to.equal(0)
+            expect(amounts[0]).to.equal(60)
+
+            // check vault balance
+            expect(await mockERC1155.balanceOf(vault.target, 0)).to.equal(60)
+            expect(await mockToken2.balanceOf(vault.target, 0)).to.equal(60)
+            expect(await mockToken3.balanceOf(vault.target, 0)).to.equal(60)
+            expect(await mockERC1155.balanceOf(vault.target, 10)).to.equal(60)
+            expect(await mockToken2.balanceOf(vault.target, 10)).to.equal(60)
+            expect(await mockToken3.balanceOf(vault.target, 10)).to.equal(60)
+
+            // check user balance
+            expect(await mockERC1155.balanceOf(owner.address, 0)).to.equal(40)
+            expect(await mockToken2.balanceOf(owner.address, 0)).to.equal(40)
+            expect(await mockToken3.balanceOf(owner.address, 0)).to.equal(40)
+            expect(await mockERC1155.balanceOf(owner.address, 10)).to.equal(40)
+            expect(await mockToken2.balanceOf(owner.address, 10)).to.equal(40)
+            expect(await mockToken3.balanceOf(owner.address, 10)).to.equal(40)
+
+            // send the rest of the tokens to the contract
+            await mockERC1155.connect(owner).safeTransferFrom(owner.address, vault.target, 0, 40, "0x")
+            await mockToken2.connect(owner).safeTransferFrom(owner.address, vault.target, 0, 40, "0x")
+            await mockToken3.connect(owner).safeTransferFrom(owner.address, vault.target, 0, 40, "0x")
+            await mockERC1155.connect(owner).safeTransferFrom(owner.address, vault.target, 10, 40, "0x")
+            await mockToken2.connect(owner).safeTransferFrom(owner.address, vault.target, 10, 40, "0x")
+            await mockToken3.connect(owner).safeTransferFrom(owner.address, vault.target, 10, 40, "0x")
+
+            // check user balance
+            expect(await mockERC1155.balanceOf(owner.address, 0)).to.equal(0)
+            expect(await mockToken2.balanceOf(owner.address, 0)).to.equal(0)
+            expect(await mockToken3.balanceOf(owner.address, 0)).to.equal(0)
+            expect(await mockERC1155.balanceOf(owner.address, 10)).to.equal(0)
+            expect(await mockToken2.balanceOf(owner.address, 10)).to.equal(0)
+            expect(await mockToken3.balanceOf(owner.address, 10)).to.equal(0)
+
+            // check vault balance
+            expect(await mockERC1155.balanceOf(vault.target, 0)).to.equal(100)
+            expect(await mockToken2.balanceOf(vault.target, 0)).to.equal(100)
+            expect(await mockToken3.balanceOf(vault.target, 0)).to.equal(100)
+            expect(await mockERC1155.balanceOf(vault.target, 10)).to.equal(100)
+            expect(await mockToken2.balanceOf(vault.target, 10)).to.equal(100)
+            expect(await mockToken3.balanceOf(vault.target, 10)).to.equal(100)
+
+            // retroactively stake the tokens
+            await vault.connect(owner).retroactiveStake(
+                [mockERC1155.target, mockToken2.target, mockToken3.target, mockERC1155.target, mockToken2.target, mockToken3.target],
+                [0, 0, 0, 10, 10, 10],
+                [40, 40, 40, 40, 40, 40],
+                owner.address,
+                90
+            )
+
+            // check that the tokens are staked by checking stakeInfo
+            stakeInfo = await vault.userStakes(owner.address, 1)
+            console.log("stakeInfo:", stakeInfo)
+            expect(stakeInfo.length).to.equal(2)
+
+            const tokenAddressesUpdated = await vault.getStakedTokenAddresses(owner.address, 1)
+            const tokenIdsUpdated = await vault.getStakedTokenIds(owner.address, 1)
+            const amountsUpdated = await vault.getStakedAmounts(owner.address, 1)
+            
+            console.log("stakeInfo:", stakeInfo)
+            console.log("tokenAddresses:", tokenAddressesUpdated)
+            console.log("tokenIds:", tokenIdsUpdated)
+            console.log("amounts:", amountsUpdated)
+            console.log("stakeTimestamp:", stakeInfo.stakeTimestamp.toString())
+            console.log("lockPeriod:", stakeInfo.lockPeriod.toString())
+
+            expect(tokenAddressesUpdated[0]).to.equal(mockERC1155.target)
+            expect(tokenAddressesUpdated[1]).to.equal(mockToken2.target)
+            expect(tokenAddressesUpdated[2]).to.equal(mockToken3.target)
+            expect(tokenIdsUpdated[0]).to.equal(0)
+            expect(tokenIdsUpdated[1]).to.equal(0)
+            expect(tokenIdsUpdated[2]).to.equal(0)
+            expect(tokenIdsUpdated[3]).to.equal(10)
+            expect(tokenIdsUpdated[4]).to.equal(10)
+            expect(tokenIdsUpdated[5]).to.equal(10)
+
+            expect(amountsUpdated[0]).to.equal(40)
+            expect(amountsUpdated[3]).to.equal(40)
+            expect(amountsUpdated[5]).to.equal(40)
+        })
     })
 
     describe("Redeem Tokens", function () {
@@ -567,8 +747,7 @@ describe(" -- Testing Farconic VAULT -- ", function () {
                 [0],
                 [50],
                 addr1.address,
-                90,
-                1
+                90
             )
         })
 
@@ -629,12 +808,12 @@ describe(" -- Testing Farconic VAULT -- ", function () {
             mockToken2 = await deployMockToken("MockERC1155", "MCK")
             await mockToken2.mint(addr1.address, 0, 100, "0x")
 
-            await vault.connect(owner).addAllowedToken(mockToken2.target)
+            await vault.connect(owner).addAllowedTokens([mockToken2.target])
             expect(await vault.allowedTokens(mockToken2.target)).to.equal(true)
         })
 
         it("should remove allowed token", async function () {
-            await vault.connect(owner).removeAllowedToken(mockToken2.target)
+            await vault.connect(owner).removeAllowedTokens([mockToken2.target])
             expect(await vault.allowedTokens(mockToken2.target)).to.equal(false)
         })
     })
