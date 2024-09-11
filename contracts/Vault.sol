@@ -44,24 +44,23 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
         uint256[] amounts;
         uint256 stakeTimestamp;
         uint256 lockPeriod;
-        uint256 id;
     }
 
     /// @notice Mapping from user to an array of their stakes
     mapping(address => StakeInfo[]) public userStakes;
 
     // Custom getter for tokenAddresses
-    function getTokenAddresses(address user, uint256 index) public view returns (address[] memory) {
+    function getStakedTokenAddresses(address user, uint256 index) public view returns (address[] memory) {
         return userStakes[user][index].tokenAddresses;
     }
 
     // Custom getter for tokenIds
-    function getTokenIds(address user, uint256 index) public view returns (uint256[] memory) {
+    function getStakedTokenIds(address user, uint256 index) public view returns (uint256[] memory) {
         return userStakes[user][index].tokenIds;
     }
 
     // Custom getter for amounts
-    function getAmounts(address user, uint256 index) public view returns (uint256[] memory) {
+    function getStakedAmounts(address user, uint256 index) public view returns (uint256[] memory) {
         return userStakes[user][index].amounts;
     }
 
@@ -91,17 +90,6 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
     //////////////////////////////////////////////////////////////*/
 
     /**
-     * @notice Approves this contract to transfer given tokens in and out of the vault.
-     * 
-     * @param tokenAddresses        The token addresses to approve.
-     */
-    function batchApprove(address[] calldata tokenAddresses) external {
-        for (uint256 i = 0; i < tokenAddresses.length; i++) {
-            IERC1155(tokenAddresses[i]).setApprovalForAll(address(this), true);
-        }
-    }
-
-    /**
      * @notice Stakes tokens in the vault.
      *
      * @param tokens The token addresses to stake.
@@ -109,15 +97,13 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
      * @param amounts The amounts of tokens to stake.
      * @param staker The owner of the tokens to be staked.
      * @param daysToLock The number of days to lock the tokens.
-     * @param id an id to associate the stake with, eg. a tokenId.
      */
     function stake(
         address[] memory tokens,
         uint256[] memory tokenIds,
         uint256[] memory amounts,
         address staker,
-        uint256 daysToLock,
-        uint256 id
+        uint256 daysToLock
     ) external {
         if (amounts.length != tokens.length) revert ArrayLengthMismatch(amounts.length, tokens.length);
         if (tokenIds.length != tokens.length) revert ArrayLengthMismatch(tokenIds.length, tokens.length);
@@ -135,8 +121,7 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
             tokenIds: tokenIds,
             amounts: amounts,
             stakeTimestamp: block.timestamp,
-            lockPeriod: daysToLock * 1 days,
-            id: id
+            lockPeriod: daysToLock * 1 days
         });
 
         // Record the stake information
@@ -162,15 +147,13 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
      * @param tokens The token addresses to stake.
      * @param amounts The amounts of tokens to stake.
      * @param daysToLock The number of days to lock the tokens.
-     * @param id an id to associate the stake with, eg. a tokenId.
      */
     function retroactiveStake(
         address[] memory tokens,
         uint256[] memory tokenIds,
         uint256[] memory amounts,
         address staker,
-        uint256 daysToLock,
-        uint256 id
+        uint256 daysToLock
     ) external {
         if (amounts.length != tokens.length) revert ArrayLengthMismatch(amounts.length, tokens.length);
         if (tokens.length == 0) revert NoTokensToStake();
@@ -189,8 +172,7 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
             tokenIds: tokenIds,
             amounts: amounts,
             stakeTimestamp: block.timestamp,
-            lockPeriod: daysToLock * 1 days,
-            id: id
+            lockPeriod: daysToLock * 1 days
         });
 
         // Record the stake information
@@ -252,25 +234,29 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
     }
 
     /**
-     * @notice Adds a token address to the allow list.
+     * @notice Adds token addresses to the allow list.
      *
-     * @param token The token address to add.
+     * @param tokens The token addresses to add.
      */
-    function addAllowedToken(
-        address token
+    function addAllowedTokens(
+        address[] calldata tokens
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        allowedTokens[token] = true;
+        for (uint256 i = 0; i < tokens.length; i++) {
+            allowedTokens[tokens[i]] = true;
+        }
     }
 
     /**
-     * @notice Removes a token address from the allow list.
+     * @notice Removes token addresses from the allow list.
      *
-     * @param token The token address to remove.
+     * @param tokens The token addresses to remove.
      */
-    function removeAllowedToken(
-        address token
+    function removeAllowedTokens(
+        address[] calldata tokens
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        allowedTokens[token] = false;
+        for (uint256 i = 0; i < tokens.length; i++) {
+            allowedTokens[tokens[i]] = false;
+        }
     }
 
     /// @notice triggered if the contract is sent ETH without data
