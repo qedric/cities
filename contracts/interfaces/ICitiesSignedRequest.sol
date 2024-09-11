@@ -37,14 +37,15 @@ interface ICitiesSignedRequest {
     event TokensMintedWithSignature(
         address indexed signer,
         address[] indexed recipients,
-        uint256 indexed tokenId
+        uint256 indexed tokenId,
+        uint256[] amounts
     );
 
     /// @dev Emitted when tokens are burned.
     event TokensBurnedWithSignature(
         address indexed signer,
-        uint256 indexed tokenId,
         address[] indexed holders,
+        uint256 indexed tokenId,
         uint256[] amounts
     );
 

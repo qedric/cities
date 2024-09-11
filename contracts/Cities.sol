@@ -151,21 +151,21 @@ contract Cities is
         // set the tokenURI
         _setTokenURI(tokenIdToMint, _req.tokenURI);
 
-        // mint one token to each address in the targetAddresses array
+        // mint amount of tokens according to amount array, to each address in the targetAddresses array
         for (uint256 i = 0; i < _req.targetAddresses.length; i++) {
-            _mint(_req.targetAddresses[i], tokenIdToMint, 1, "");
+            _mint(_req.targetAddresses[i], tokenIdToMint, _req.amounts[i], "");
         }
 
         // emit the event
-        emit TokensMintedWithSignature(signer, _req.targetAddresses, tokenIdToMint);
+        emit TokensMintedWithSignature(signer, _req.targetAddresses, tokenIdToMint, _req.amounts );
     }
 
 
     /**
      *  @notice Burns a given qty of the requestor's balance the requested tokenId
-     *  @dev    Only an account holding MINTER_ROLE can sign claim requests.
+     *  @dev    Only an account holding MINTER_ROLE can sign requests.
      *
-     *  @param req The payload / stake request.
+     *  @param req The burn request.
      *  @param signature The signature produced by an account signing the request.
      * 
      */
@@ -188,7 +188,7 @@ contract Cities is
         }
 
         // emit the event
-        emit TokensBurnedWithSignature(signer, req.tokenId, req.targetAddresses, req.amounts);
+        emit TokensBurnedWithSignature(signer, req.targetAddresses, req.tokenId, req.amounts);
 
     }
 
