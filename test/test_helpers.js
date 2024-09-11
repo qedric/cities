@@ -145,10 +145,10 @@ module.exports = {
   getCurrentBlockTime: getCurrentBlockTime,
 
   deployMockToken: async function (name, symbol) {
-    const MockToken = await ethers.getContractFactory("MockToken");
-    const token = await MockToken.deploy(name, symbol);
-    await token.waitForDeployment();
-    return token;
+    const MockToken = await ethers.getContractFactory("MockERC1155")
+    const token = await MockToken.deploy()
+    await token.waitForDeployment()
+    return token
   },
 
   generateRequest: async function (contractAddress, signer, tokenURI, targetAddresses, amounts, startTime, endTime) {
