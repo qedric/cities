@@ -378,25 +378,42 @@ describe(" -- Testing Farconic VAULT -- ", function () {
                 90 // stakeDays
             )
 
-            //const stakeInfo = await vault.userStakes(addr1.address, 0)
-            const tokenAddresses = await vault.getStakedTokenAddresses(addr1.address, 0)
-            const tokenIds = await vault.getStakedTokenIds(addr1.address, 0)
-            const amounts = await vault.getStakedAmounts(addr1.address, 0)
+            const totalStakedMapping = await vault.stakedBalance(addr1.address, mockERC1155.target, 0)
 
-            /* console.log("stakeInfo:", stakeInfo)
-            console.log("tokenAddresses:", tokenAddresses)
-            console.log("tokenIds:", tokenIds)
-            console.log("amounts:", amounts)
-            console.log("stakeTimestamp:", stakeInfo.stakeTimestamp.toString())
-            console.log("lockPeriod:", stakeInfo.lockPeriod.toString())
-            console.log("id:", stakeInfo.id.toString()) */
-
-            expect(tokenAddresses[0]).to.equal(mockERC1155.target)
-            expect(tokenIds[0]).to.equal(0)
-            expect(amounts[0]).to.equal(50)
+            expect(totalStakedMapping).to.equal(50)
 
             // Check that the correct event was fired
             await expect(tx).to.emit(vault, 'TokensStaked')
+
+            const userStakes = await vault.getUserStakes(addr1.address)
+            //console.log("userStakes:", userStakes[0])
+            expect(userStakes.length).to.equal(1)
+
+            // get the TokensStaked event from the receipt and confirm all values
+            const receipt = await tx.wait()
+            const events = receipt.logs.map(log => vault.interface.parseLog(log))
+            //console.log("events:", events)
+            events.filter(event => event?.name === "TokensStaked").forEach(event => {
+
+                /* console.log("event args:", event.args)
+                console.log("event args user:", event.args.user)
+                console.log("event args operator:", event.args.operator)
+                console.log("event args stakeInfo:", event.args.stakeInfo)  
+                console.log("event args stakeInfo tokenAddress:", event.args.stakeInfo[0])
+                console.log("event args stakeInfo tokenId:", event.args.stakeInfo[1])
+                console.log("event args stakeInfo amount:", event.args.stakeInfo[2])
+                console.log("event args stakeInfo timestamp:", event.args.stakeInfo[3])
+                console.log("event args stakeInfo lockPeriod:", event.args.stakeInfo[4]) */
+
+                expect(event.args.user).to.equal(addr1.address)
+                expect(event.args.operator).to.equal(addr1.address)
+                expect(event.args.stakeInfo[0][0]).to.equal(mockERC1155.target)
+                expect(event.args.stakeInfo[1][0]).to.equal(0)
+                expect(event.args.stakeInfo[2][0]).to.equal(50)
+                expect(event.args.stakeInfo[4]).to.equal(90 * 24 * 60 * 60) // 90 days in seconds
+
+            })
+
         })
 
         it("should fail if no tokens are provided", async function () {
@@ -488,15 +505,14 @@ describe(" -- Testing Farconic VAULT -- ", function () {
             // Transfer tokens to the contract
             await mockERC1155.connect(addr1).safeTransferFrom(addr1.address, vault.target, 0, 50, "0x")
 
+            let stakedTokenBalance = await vault.stakedBalance(addr1.address, mockERC1155.target, 0)
+            expect(stakedTokenBalance).to.equal(0)
+
+            // check unstaked balance
+            let unStakedTokenBalance = await vault.unstakedBalance(addr1.address, mockERC1155.target, 0)
+            expect(unStakedTokenBalance).to.equal(50)
+ 
             // Retroactively stake the tokens
-            /*     
-                address[] memory tokens,
-                uint256[] memory tokenIds,
-                uint256[] memory amounts,
-                address staker,
-                uint256 daysToLock,
-                uint256 id 
-            */
             const tx = await vault.connect(addr1).retroactiveStake(
                 [mockERC1155.target], // address[] memory tokens,
                 [0], // uint256[] memory tokenIds
@@ -505,13 +521,12 @@ describe(" -- Testing Farconic VAULT -- ", function () {
                 90 // uint256 daysToLock,
             )
 
-            const tokenAddresses = await vault.getStakedTokenAddresses(addr1.address, 0)
-            const tokenIds = await vault.getStakedTokenIds(addr1.address, 0)
-            const amounts = await vault.getStakedAmounts(addr1.address, 0)
+            stakedTokenBalance = await vault.stakedBalance(addr1.address, mockERC1155.target, 0)
+            expect(stakedTokenBalance).to.equal(50)
 
-            expect(tokenAddresses[0]).to.equal(mockERC1155.target)
-            expect(tokenIds[0]).to.equal(0)
-            expect(amounts[0]).to.equal(50)
+            // check unstaked balance
+            unStakedTokenBalance = await vault.unstakedBalance(addr1.address, mockERC1155.target, 0)
+            expect(unStakedTokenBalance).to.equal(0)
 
             // Check that the correct event was fired
             await expect(tx).to.emit(vault, 'TokensStaked')
@@ -633,27 +648,13 @@ describe(" -- Testing Farconic VAULT -- ", function () {
                 90
             )
 
+            let userStakes = await vault.getUserStakes(owner.address)
+
             // check that the tokens are staked by checking stakeInfo
-            let stakeInfo = await vault.userStakes(owner.address, 0)
-            console.log("stakeInfo:", stakeInfo)
-            expect(stakeInfo.length).to.equal(2)
+            expect(userStakes.length).to.equal(1)
 
-            const tokenAddresses = await vault.getStakedTokenAddresses(owner.address, 0)
-            const tokenIds = await vault.getStakedTokenIds(owner.address, 0)
-            const amounts = await vault.getStakedAmounts(owner.address, 0)
-
-            /* 
-                console.log("stakeInfo:", stakeInfo)
-                console.log("tokenAddresses:", tokenAddresses)
-                console.log("tokenIds:", tokenIds)
-                console.log("amounts:", amounts)
-                console.log("stakeTimestamp:", stakeInfo.stakeTimestamp.toString())
-                console.log("lockPeriod:", stakeInfo.lockPeriod.toString())
-             */
-
-            expect(tokenAddresses[0]).to.equal(mockERC1155.target)
-            expect(tokenIds[0]).to.equal(0)
-            expect(amounts[0]).to.equal(60)
+            let stakedBalance = await vault.stakedBalance(owner.address, mockERC1155.target, 0)
+            expect(stakedBalance).to.equal(60)
 
             // check vault balance
             expect(await mockERC1155.balanceOf(vault.target, 0)).to.equal(60)
@@ -705,34 +706,13 @@ describe(" -- Testing Farconic VAULT -- ", function () {
             )
 
             // check that the tokens are staked by checking stakeInfo
-            stakeInfo = await vault.userStakes(owner.address, 1)
-            console.log("stakeInfo:", stakeInfo)
-            expect(stakeInfo.length).to.equal(2)
+            userStakes = await vault.getUserStakes(owner.address)
+            expect(userStakes.length).to.equal(2)
 
-            const tokenAddressesUpdated = await vault.getStakedTokenAddresses(owner.address, 1)
-            const tokenIdsUpdated = await vault.getStakedTokenIds(owner.address, 1)
-            const amountsUpdated = await vault.getStakedAmounts(owner.address, 1)
+            stakedBalance = await vault.stakedBalance(owner.address, mockERC1155.target, 0)
+            expect(stakedBalance).to.equal(100)
             
-            console.log("stakeInfo:", stakeInfo)
-            console.log("tokenAddresses:", tokenAddressesUpdated)
-            console.log("tokenIds:", tokenIdsUpdated)
-            console.log("amounts:", amountsUpdated)
-            console.log("stakeTimestamp:", stakeInfo.stakeTimestamp.toString())
-            console.log("lockPeriod:", stakeInfo.lockPeriod.toString())
-
-            expect(tokenAddressesUpdated[0]).to.equal(mockERC1155.target)
-            expect(tokenAddressesUpdated[1]).to.equal(mockToken2.target)
-            expect(tokenAddressesUpdated[2]).to.equal(mockToken3.target)
-            expect(tokenIdsUpdated[0]).to.equal(0)
-            expect(tokenIdsUpdated[1]).to.equal(0)
-            expect(tokenIdsUpdated[2]).to.equal(0)
-            expect(tokenIdsUpdated[3]).to.equal(10)
-            expect(tokenIdsUpdated[4]).to.equal(10)
-            expect(tokenIdsUpdated[5]).to.equal(10)
-
-            expect(amountsUpdated[0]).to.equal(40)
-            expect(amountsUpdated[3]).to.equal(40)
-            expect(amountsUpdated[5]).to.equal(40)
+            //console.log("userStakes:", userStakes)
         })
     })
 
@@ -756,12 +736,25 @@ describe(" -- Testing Farconic VAULT -- ", function () {
             await ethers.provider.send("evm_increaseTime", [90 * 24 * 60 * 60])
             await ethers.provider.send("evm_mine")
 
+            let balance = await mockERC1155.balanceOf(addr1.address, 0)
+            expect(balance).to.equal(50)
+
+            // stake 50 more tokens
+            await vault.connect(addr1).stake(
+                [mockERC1155.target],
+                [0],
+                [50],
+                addr1.address,
+                90
+            )
+
+            balance = await mockERC1155.balanceOf(addr1.address, 0)
+            expect(balance).to.equal(0)
+
             const tx = await vault.connect(addr1).redeemTokens(addr1.address, 0)
 
-            const balance = await mockERC1155.balanceOf(addr1.address, 0)
-            expect(balance).to.equal(100)
-
-            await expect(vault.userStakes(addr1.address, 0)).to.be.reverted
+            balance = await mockERC1155.balanceOf(addr1.address, 0)
+            expect(balance).to.equal(50)
 
             // Check that the correct event was fired
             await expect(tx).to.emit(vault, 'TokensRedeemed')

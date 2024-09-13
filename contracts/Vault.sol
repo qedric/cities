@@ -10,7 +10,6 @@ import "@thirdweb-dev/contracts/extension/PermissionsEnumerable.sol";
  * @author https://github.com/qedric
  */
 contract Vault is IERC1155Receiver, PermissionsEnumerable {
-
     error ArrayLengthMismatch(uint256 lengthA, uint256 lengthB);
     error NoTokensToStake();
     error MinimumStakePeriodNotMet(uint256 provided, uint256 required);
@@ -33,45 +32,45 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
         StakeInfo stakeInfo
     );
 
-    event TokenReceivedWithMessage(address indexed from, uint256 id, uint256 amount, address operator, bytes data);
+    event TokenReceivedWithMessage(
+        address indexed from,
+        uint256 id,
+        uint256 amount,
+        address operator,
+        bytes data
+    );
 
-    event TokensReceivedWithMessage(address indexed from, uint256 batchSize, address operator, bytes data);
-
+    event TokensReceivedWithMessage(
+        address indexed from,
+        uint256 batchSize,
+        address operator,
+        bytes data
+    );
 
     struct StakeInfo {
         address[] tokenAddresses;
-        uint256[] tokenIds; // Add tokenIds to the struct
+        uint256[] tokenIds;
         uint256[] amounts;
         uint256 stakeTimestamp;
         uint256 lockPeriod;
     }
 
     /// @notice Mapping from user to an array of their stakes
-    mapping(address => StakeInfo[]) public userStakes;
+    mapping(address => StakeInfo[]) public userStakeInfo;
 
-    // Custom getter for tokenAddresses
-    function getStakedTokenAddresses(address user, uint256 index) public view returns (address[] memory) {
-        return userStakes[user][index].tokenAddresses;
-    }
+    /// @notice total staked balance of a given token - tokenId
+    mapping(address => mapping(address => mapping(uint256 => uint256))) public stakedBalance;
+    // userTokenTotals[user][tokenAddress][tokenId] = totalAmountStaked
 
-    // Custom getter for tokenIds
-    function getStakedTokenIds(address user, uint256 index) public view returns (uint256[] memory) {
-        return userStakes[user][index].tokenIds;
-    }
-
-    // Custom getter for amounts
-    function getStakedAmounts(address user, uint256 index) public view returns (uint256[] memory) {
-        return userStakes[user][index].amounts;
-    }
+    /// @notice total unstaked balance of a given token - tokenId
+    mapping(address => mapping(address => mapping(uint256 => uint256))) public unstakedBalance;
+    // unstakedBalances[user][tokenAddress][tokenId] = totalAmountUnstaked
 
     /// @notice Mapping to store allowed token addresses
     mapping(address => bool) public allowedTokens;
 
     /// @notice Mapping of allowed operators (other than the user) to stake & redeem tokens
     mapping(address => bool) public allowedOperators;
-
-    /// @notice Mapping from user to token address to unstaked amounts
-    mapping(address => mapping(address => uint256)) public unstakedBalances;
 
     /// @dev the minimum period in days that a token must be staked for
     uint16 public min_stake_days = 90;
@@ -105,16 +104,12 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
         address staker,
         uint256 daysToLock
     ) external {
+
+        if (tokens.length == 0) revert NoTokensToStake();
         if (amounts.length != tokens.length) revert ArrayLengthMismatch(amounts.length, tokens.length);
         if (tokenIds.length != tokens.length) revert ArrayLengthMismatch(tokenIds.length, tokens.length);
-        if (tokens.length == 0) revert NoTokensToStake();
         if (daysToLock < min_stake_days) revert MinimumStakePeriodNotMet(daysToLock, min_stake_days);
         if (staker != msg.sender && !allowedOperators[msg.sender]) revert NotAuthorised();
-
-        // Check if all tokens are allowed
-        for (uint256 i = 0; i < tokens.length; i++) {
-            if (!allowedTokens[tokens[i]]) revert TokenNotAllowed();
-        }
 
         StakeInfo memory stakeinfo = StakeInfo({
             tokenAddresses: tokens,
@@ -125,10 +120,16 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
         });
 
         // Record the stake information
-        userStakes[staker].push(stakeinfo);
+        userStakeInfo[staker].push(stakeinfo);
 
         // Transfer tokens from user to this contract
         for (uint256 i = 0; i < tokens.length; i++) {
+
+            if (!allowedTokens[tokens[i]]) revert TokenNotAllowed();
+
+            // Increment the total staked amount for the token/tokenId
+            stakedBalance[staker][tokens[i]][tokenIds[i]] += amounts[i];
+
             IERC1155(tokens[i]).safeTransferFrom(
                 staker,
                 address(this),
@@ -155,16 +156,23 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
         address staker,
         uint256 daysToLock
     ) external {
-        if (amounts.length != tokens.length) revert ArrayLengthMismatch(amounts.length, tokens.length);
+        if (amounts.length != tokens.length)
+            revert ArrayLengthMismatch(amounts.length, tokens.length);
         if (tokens.length == 0) revert NoTokensToStake();
-        if (daysToLock < min_stake_days) revert MinimumStakePeriodNotMet(daysToLock, min_stake_days);
-        if (staker != msg.sender && !allowedOperators[msg.sender]) revert NotAuthorised();
+        if (daysToLock < min_stake_days)
+            revert MinimumStakePeriodNotMet(daysToLock, min_stake_days);
+        if (staker != msg.sender && !allowedOperators[msg.sender])
+            revert NotAuthorised();
 
         for (uint256 i = 0; i < tokens.length; i++) {
             // Ensure the user has sufficient unstaked balance to create a new stake
-            if (unstakedBalances[msg.sender][tokens[i]] < amounts[i]) revert InsufficientBalance();
+            if (unstakedBalance[msg.sender][tokens[i]][tokenIds[i]] < amounts[i])
+                revert InsufficientBalance();
             // Deduct the staked amounts from the unstaked balance
-            unstakedBalances[msg.sender][tokens[i]] -= amounts[i];
+            unstakedBalance[msg.sender][tokens[i]][tokenIds[i]] -= amounts[i];
+
+            // Increment the total staked amount for the token/tokenId
+            stakedBalance[staker][tokens[i]][tokenIds[i]] += amounts[i];
         }
 
         StakeInfo memory stakeinfo = StakeInfo({
@@ -176,7 +184,7 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
         });
 
         // Record the stake information
-        userStakes[msg.sender].push(stakeinfo);
+        userStakeInfo[msg.sender].push(stakeinfo);
 
         emit TokensStaked(msg.sender, msg.sender, stakeinfo);
     }
@@ -188,24 +196,33 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
      * @param stakeIndex The index of the stake to redeem.
      */
     function redeemTokens(address staker, uint256 stakeIndex) external {
-        if (userStakes[staker].length == 0) revert NotFound();
-        if (stakeIndex >= userStakes[staker].length) revert InvalidStakeIndex();
+        if (userStakeInfo[staker].length == 0) revert NotFound();
+        if (stakeIndex >= userStakeInfo[staker].length) revert InvalidStakeIndex();
 
         // Ensure that the caller is the staker or an allowed operator
-        if (staker != msg.sender && !allowedOperators[msg.sender]) revert NotAuthorised();
+        if (staker != msg.sender && !allowedOperators[msg.sender])
+            revert NotAuthorised();
 
-        StakeInfo memory stakeInfo = userStakes[staker][stakeIndex];
+        StakeInfo memory stakeInfo = userStakeInfo[staker][stakeIndex];
 
-        if (block.timestamp < stakeInfo.stakeTimestamp + stakeInfo.lockPeriod) revert MinimumStakePeriodNotMet(block.timestamp, stakeInfo.stakeTimestamp + stakeInfo.lockPeriod);
+        if (block.timestamp < stakeInfo.stakeTimestamp + stakeInfo.lockPeriod)
+            revert MinimumStakePeriodNotMet(
+                block.timestamp,
+                stakeInfo.stakeTimestamp + stakeInfo.lockPeriod
+            );
 
         // Remove the stake from the user's list of stakes
-        userStakes[staker][stakeIndex] = userStakes[staker][
-            userStakes[staker].length - 1
+        userStakeInfo[staker][stakeIndex] = userStakeInfo[staker][
+            userStakeInfo[staker].length - 1
         ];
-        userStakes[staker].pop();
+        userStakeInfo[staker].pop();
 
-        // Transfer tokens back to the user
         for (uint256 i = 0; i < stakeInfo.tokenAddresses.length; i++) {
+
+            // Decrement the total staked amount for the token/tokenId
+            stakedBalance[staker][stakeInfo.tokenAddresses[i]][stakeInfo.tokenIds[i]] -= stakeInfo.amounts[i];
+
+            // Transfer tokens from this contract to the staker 
             IERC1155(stakeInfo.tokenAddresses[i]).safeTransferFrom(
                 address(this),
                 staker,
@@ -284,7 +301,7 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
         emit TokenReceivedWithMessage(from, id, value, operator, data);
 
         // Update the unstaked balance of the user for this token
-        unstakedBalances[from][msg.sender] += value;
+        unstakedBalance[from][msg.sender][id] += value;
 
         // Continue with the default ERC1155 receiver behavior
         return this.onERC1155Received.selector;
@@ -301,14 +318,15 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
         // Check if the token is allowed
         if (!allowedTokens[msg.sender]) revert TokenNotAllowed();
 
-        if (values.length != ids.length) revert ArrayLengthMismatch(values.length, ids.length);
+        if (values.length != ids.length)
+            revert ArrayLengthMismatch(values.length, ids.length);
 
         // Log the message (or handle it as needed)
         emit TokensReceivedWithMessage(from, ids.length, operator, data);
 
         for (uint256 i = 0; i < ids.length; i++) {
             // Track batch received tokens
-            unstakedBalances[from][msg.sender] += values[i];
+            unstakedBalance[from][msg.sender][ids[i]] += values[i];
         }
 
         return this.onERC1155BatchReceived.selector;
@@ -319,4 +337,14 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
     ) public view virtual override returns (bool) {
         return interfaceId == type(IERC1155Receiver).interfaceId;
     }
+
+    /*///////////////////////////////////////////////////////////////
+                    Getter functions for mappings
+    //////////////////////////////////////////////////////////////*/
+    function getUserStakes(
+        address user
+    ) public view returns (StakeInfo[] memory) {
+        return userStakeInfo[user];
+    }
+
 }
