@@ -34,6 +34,7 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
 
     event TokenReceivedWithMessage(
         address indexed from,
+        address indexed token,
         uint256 id,
         uint256 amount,
         address operator,
@@ -42,6 +43,7 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
 
     event TokensReceivedWithMessage(
         address indexed from,
+        address indexed token,
         uint256 batchSize,
         address operator,
         bytes data
@@ -298,7 +300,7 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
         if (!allowedTokens[msg.sender]) revert TokenNotAllowed();
 
         // Log the message (or handle it as needed)
-        emit TokenReceivedWithMessage(from, id, value, operator, data);
+        emit TokenReceivedWithMessage(from, msg.sender, id, value, operator, data);
 
         // Update the unstaked balance of the user for this token
         unstakedBalance[from][msg.sender][id] += value;
@@ -322,7 +324,7 @@ contract Vault is IERC1155Receiver, PermissionsEnumerable {
             revert ArrayLengthMismatch(values.length, ids.length);
 
         // Log the message (or handle it as needed)
-        emit TokensReceivedWithMessage(from, ids.length, operator, data);
+        emit TokensReceivedWithMessage(from, msg.sender, ids.length, operator, data);
 
         for (uint256 i = 0; i < ids.length; i++) {
             // Track batch received tokens
